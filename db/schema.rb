@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.0].define(version: 2025_03_23_202849) do
+ActiveRecord::Schema[8.0].define(version: 2025_03_23_210219) do
   create_table "classrooms", force: :cascade do |t|
     t.string "name"
     t.integer "class_type_id"
@@ -32,6 +32,18 @@ ActiveRecord::Schema[8.0].define(version: 2025_03_23_202849) do
     t.index ["resource_type", "resource_id"], name: "index_roles_on_resource"
   end
 
+  create_table "students", force: :cascade do |t|
+    t.integer "user_id", null: false
+    t.integer "classroom_id", null: false
+    t.integer "state"
+    t.boolean "is_archived"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["classroom_id"], name: "index_students_on_classroom_id"
+    t.index ["is_archived"], name: "index_students_on_is_archived"
+    t.index ["user_id"], name: "index_students_on_user_id"
+  end
+
   create_table "users", force: :cascade do |t|
     t.string "email", default: "", null: false
     t.string "encrypted_password", default: "", null: false
@@ -51,4 +63,7 @@ ActiveRecord::Schema[8.0].define(version: 2025_03_23_202849) do
     t.index ["user_id", "role_id"], name: "index_users_roles_on_user_id_and_role_id"
     t.index ["user_id"], name: "index_users_roles_on_user_id"
   end
+
+  add_foreign_key "students", "classrooms"
+  add_foreign_key "students", "users"
 end
