@@ -1,0 +1,31 @@
+<div id="<%= dom_id address %>">
+  <p>
+    <strong>City:</strong>
+    <%= address.city %>
+  </p>
+
+  <p>
+    <strong>Npa:</strong>
+    <%= address.npa %>
+  </p>
+
+  <p>
+    <strong>Street:</strong>
+    <%= address.street %>
+  </p>
+
+  <p>
+    <strong>House:</strong>
+    <%= address.house %>
+  </p>
+
+  <p>
+    <strong>Apartment number:</strong>
+    <%= address.apartment_number %>
+  </p>
+
+  <p>
+    <strong>User:</strong>
+    <%= address.user ? address.user.email : "None" %>
+  </p>
+</div>

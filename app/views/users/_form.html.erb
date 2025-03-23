@@ -1,0 +1,47 @@
+<%= form_with(model: user) do |form| %>
+  <% if user.errors.any? %>
+    <div style="color: red">
+      <h2><%= pluralize(user.errors.count, "error") %> prohibited this user from being saved:</h2>
+
+      <ul>
+        <% user.errors.each do |error| %>
+          <li><%= error.full_message %></li>
+        <% end %>
+      </ul>
+    </div>
+  <% end %>
+
+  <div>
+    <%= form.label :email, style: "display: block" %>
+    <%= form.email_field :email %>
+  </div>
+
+  <div>
+    <%= form.label :password, style: "display: block" %>
+    <%= form.password_field :password %>
+  </div>
+
+  <div>
+    <%= form.label :password_confirmation, style: "display: block" %>
+    <%= form.password_field :password_confirmation %>
+  </div>
+
+  <div>
+    <%= form.label :address_id, "Address", style: "display: block" %>
+    <%= form.collection_select :address_id, Address.all, :id, :city, { include_blank: "-- Select Address --" } %>
+  </div>
+
+  <div>
+    <h3>Roles</h3>
+    <% Role.all.each do |role| %>
+      <div>
+        <%= check_box_tag "user[role_ids][]", role.id, user.has_role?(role.name), id: dom_id(role) %>
+        <%= label_tag dom_id(role), role.name.humanize %>
+      </div>
+    <% end %>
+  </div>
+
+  <div>
+    <%= form.submit %>
+  </div>
+<% end %> 

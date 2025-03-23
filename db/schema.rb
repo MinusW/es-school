@@ -10,7 +10,17 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.0].define(version: 2025_03_23_223545) do
+ActiveRecord::Schema[8.0].define(version: 2025_03_23_225218) do
+  create_table "addresses", force: :cascade do |t|
+    t.string "city"
+    t.string "npa"
+    t.string "street"
+    t.string "house"
+    t.string "apartment_number"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+  end
+
   create_table "class_types", force: :cascade do |t|
     t.string "name"
     t.text "description"
@@ -141,6 +151,8 @@ ActiveRecord::Schema[8.0].define(version: 2025_03_23_223545) do
     t.datetime "remember_created_at"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.integer "address_id"
+    t.index ["address_id"], name: "index_users_on_address_id"
     t.index ["email"], name: "index_users_on_email", unique: true
     t.index ["reset_password_token"], name: "index_users_on_reset_password_token", unique: true
   end
@@ -166,4 +178,5 @@ ActiveRecord::Schema[8.0].define(version: 2025_03_23_223545) do
   add_foreign_key "to_grades", "quarters"
   add_foreign_key "to_grades", "students"
   add_foreign_key "to_grades", "users", column: "teacher_id"
+  add_foreign_key "users", "addresses"
 end

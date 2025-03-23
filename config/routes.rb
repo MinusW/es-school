@@ -1,4 +1,5 @@
 Rails.application.routes.draw do
+  resources :addresses
   resources :themes
   # Authentication routes
   devise_for :users
