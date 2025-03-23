@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.0].define(version: 2025_03_23_225218) do
+ActiveRecord::Schema[8.0].define(version: 2025_03_23_230309) do
   create_table "addresses", force: :cascade do |t|
     t.string "city"
     t.string "npa"
@@ -120,6 +120,17 @@ ActiveRecord::Schema[8.0].define(version: 2025_03_23_225218) do
     t.index ["user_id"], name: "index_students_on_user_id"
   end
 
+  create_table "teachers", force: :cascade do |t|
+    t.string "IBAN"
+    t.integer "state"
+    t.boolean "is_dean"
+    t.boolean "is_archived"
+    t.integer "user_id", null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["user_id"], name: "index_teachers_on_user_id"
+  end
+
   create_table "themes", force: :cascade do |t|
     t.string "module_name"
     t.text "module_description"
@@ -174,6 +185,7 @@ ActiveRecord::Schema[8.0].define(version: 2025_03_23_225218) do
   add_foreign_key "grades", "teachers"
   add_foreign_key "students", "classrooms"
   add_foreign_key "students", "users"
+  add_foreign_key "teachers", "users"
   add_foreign_key "to_grades", "course_modules", column: "module_id"
   add_foreign_key "to_grades", "quarters"
   add_foreign_key "to_grades", "students"

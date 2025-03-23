@@ -11,6 +11,7 @@ class User < ApplicationRecord
   has_many :grades, foreign_key: "teacher_id"
   has_many :student_grades, through: :students, source: :grades
   has_one :address, dependent: :destroy
+  has_one :teacher, dependent: :destroy
 
   def dean?
     has_role?(:dean)

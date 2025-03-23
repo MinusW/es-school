@@ -3,29 +3,33 @@ class TeachersController < ApplicationController
 
   # GET /teachers or /teachers.json
   def index
-    @teachers = Teacher.all
+    @teachers = policy_scope(Teacher)
   end
 
   # GET /teachers/1 or /teachers/1.json
   def show
+    authorize @teacher
   end
 
   # GET /teachers/new
   def new
     @teacher = Teacher.new
+    authorize @teacher
   end
 
   # GET /teachers/1/edit
   def edit
+    authorize @teacher
   end
 
   # POST /teachers or /teachers.json
   def create
     @teacher = Teacher.new(teacher_params)
+    authorize @teacher
 
     respond_to do |format|
       if @teacher.save
-        format.html { redirect_to @teacher, notice: "Teacher was successfully created." }
+        format.html { redirect_to teacher_url(@teacher), notice: "Teacher was successfully created." }
         format.json { render :show, status: :created, location: @teacher }
       else
         format.html { render :new, status: :unprocessable_entity }
@@ -36,9 +40,11 @@ class TeachersController < ApplicationController
 
   # PATCH/PUT /teachers/1 or /teachers/1.json
   def update
+    authorize @teacher
+
     respond_to do |format|
       if @teacher.update(teacher_params)
-        format.html { redirect_to @teacher, notice: "Teacher was successfully updated." }
+        format.html { redirect_to teacher_url(@teacher), notice: "Teacher was successfully updated." }
         format.json { render :show, status: :ok, location: @teacher }
       else
         format.html { render :edit, status: :unprocessable_entity }
@@ -49,10 +55,13 @@ class TeachersController < ApplicationController
 
   # DELETE /teachers/1 or /teachers/1.json
   def destroy
-    @teacher.destroy!
+    authorize @teacher
+
+    # Soft delete by marking as archived
+    @teacher.update(is_archived: true)
 
     respond_to do |format|
-      format.html { redirect_to teachers_path, status: :see_other, notice: "Teacher was successfully destroyed." }
+      format.html { redirect_to teachers_url, notice: "Teacher was successfully archived." }
       format.json { head :no_content }
     end
   end
@@ -60,11 +69,11 @@ class TeachersController < ApplicationController
   private
     # Use callbacks to share common setup or constraints between actions.
     def set_teacher
-      @teacher = Teacher.find(params.expect(:id))
+      @teacher = Teacher.find(params[:id])
     end
 
     # Only allow a list of trusted parameters through.
     def teacher_params
-      params.expect(teacher: [ :IBAN, :state, :is_dean, :is_archived, :user_id ])
+      params.require(:teacher).permit(:IBAN, :state, :is_dean, :is_archived, :user_id)
     end
 end

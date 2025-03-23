@@ -1,7 +1,4 @@
 Rails.application.routes.draw do
-  resources :teachers
-  resources :addresses
-  resources :themes
   # Authentication routes
   devise_for :users
 
@@ -10,6 +7,8 @@ Rails.application.routes.draw do
 
   # Application resources
   resources :users, except: :destroy
+  resources :teachers
+  resources :addresses
   resources :rooms
   resources :class_types
   resources :themes
