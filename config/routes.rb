@@ -1,12 +1,19 @@
 Rails.application.routes.draw do
-  resources :grades
-  resources :courses
-  resources :students
-  resources :classrooms
+  # Authentication routes
   devise_for :users
-  resources :users, except: :destroy
-  root "home#index"
-  resources :classrooms
 
+  # Root path
+  root "home#index"
+
+  # Application resources
+  resources :users, except: :destroy
+  resources :rooms
+  resources :class_types
+  resources :classrooms
+  resources :students
+  resources :courses
+  resources :grades
+
+  # Health check
   get "up" => "rails/health#show", as: :rails_health_check
 end

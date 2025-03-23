@@ -1,0 +1,16 @@
+<p style="color: green"><%= notice %></p>
+
+<% content_for :title, "Class types" %>
+
+<h1>Class types</h1>
+
+<div id="class_types">
+  <% @class_types.each do |class_type| %>
+    <%= render class_type %>
+    <p>
+      <%= link_to "Show this class type", class_type %>
+    </p>
+  <% end %>
+</div>
+
+<%= link_to "New class type", new_class_type_path %>

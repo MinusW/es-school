@@ -10,7 +10,15 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.0].define(version: 2025_03_23_221007) do
+ActiveRecord::Schema[8.0].define(version: 2025_03_23_222034) do
+  create_table "class_types", force: :cascade do |t|
+    t.string "name"
+    t.text "description"
+    t.boolean "is_archived"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+  end
+
   create_table "classrooms", force: :cascade do |t|
     t.string "name"
     t.integer "class_type_id"
@@ -78,6 +86,16 @@ ActiveRecord::Schema[8.0].define(version: 2025_03_23_221007) do
     t.index ["name", "resource_type", "resource_id"], name: "index_roles_on_name_and_resource_type_and_resource_id"
     t.index ["name"], name: "index_roles_on_name"
     t.index ["resource_type", "resource_id"], name: "index_roles_on_resource"
+  end
+
+  create_table "rooms", force: :cascade do |t|
+    t.string "name"
+    t.string "building"
+    t.integer "floor"
+    t.integer "capacity"
+    t.boolean "is_archived"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
   end
 
   create_table "students", force: :cascade do |t|

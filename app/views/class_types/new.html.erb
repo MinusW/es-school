@@ -1,0 +1,11 @@
+<% content_for :title, "New class type" %>
+
+<h1>New class type</h1>
+
+<%= render "form", class_type: @class_type %>
+
+<br>
+
+<div>
+  <%= link_to "Back to class types", class_types_path %>
+</div>
