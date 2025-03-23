@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.0].define(version: 2025_03_23_230309) do
+ActiveRecord::Schema[8.0].define(version: 2025_03_23_231956) do
   create_table "addresses", force: :cascade do |t|
     t.string "city"
     t.string "npa"
@@ -37,6 +37,8 @@ ActiveRecord::Schema[8.0].define(version: 2025_03_23_230309) do
     t.boolean "is_archived"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.integer "quarter_id"
+    t.index ["quarter_id"], name: "index_classrooms_on_quarter_id"
   end
 
   create_table "course_modules", force: :cascade do |t|
@@ -176,6 +178,7 @@ ActiveRecord::Schema[8.0].define(version: 2025_03_23_230309) do
     t.index ["user_id"], name: "index_users_roles_on_user_id"
   end
 
+  add_foreign_key "classrooms", "quarters"
   add_foreign_key "courses", "classrooms"
   add_foreign_key "courses", "modules"
   add_foreign_key "courses", "quarters"

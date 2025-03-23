@@ -1,0 +1,16 @@
+<% content_for :title, "Quarters" %>
+
+<p style="color: green"><%= notice %></p>
+
+<h1>Quarters</h1>
+
+<div id="quarters">
+  <% @quarters.each do |quarter| %>
+    <%= render quarter %>
+    <p>
+      <%= link_to "Show this quarter", quarter %>
+    </p>
+  <% end %>
+</div>
+
+<%= link_to "New quarter", new_quarter_path %> 

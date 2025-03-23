@@ -2,6 +2,7 @@ class Classroom < ApplicationRecord
   belongs_to :teacher
   belongs_to :class_type
   belongs_to :room
+  belongs_to :quarter, optional: true
 
   has_many :students
   has_many :users, through: :students

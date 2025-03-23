@@ -1,7 +1,7 @@
 class Teacher < ApplicationRecord
   belongs_to :user
 
-  enum state: { active: 0, on_leave: 1, retired: 2, inactive: 3 }
+  enum :state, { active: 0, on_leave: 1, retired: 2, inactive: 3 }
 
   validates :user_id, presence: true, uniqueness: true
   validates :IBAN, presence: true

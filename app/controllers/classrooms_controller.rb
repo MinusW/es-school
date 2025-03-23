@@ -1,6 +1,6 @@
 class ClassroomsController < ApplicationController
   before_action :authenticate_user!
-  before_action :authorize_classroom, except: [:index, :show]  # Only allow authorized actions
+  before_action :authorize_classroom, except: [ :index, :show ]  # Only allow authorized actions
 
   def index
     @classrooms = policy_scope(Classroom)  # Pundit scope for classrooms
@@ -51,7 +51,7 @@ class ClassroomsController < ApplicationController
   private
 
   def classroom_params
-    params.require(:classroom).permit(:name, :class_type_id, :room_id, :teacher_id, :is_archived)
+    params.require(:classroom).permit(:name, :class_type_id, :room_id, :teacher_id, :quarter_id, :is_archived)
   end
 
   def authorize_classroom

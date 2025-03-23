@@ -1,0 +1,10 @@
+<% content_for :title, "Edit Quarter" %>
+
+<h1>Editing quarter</h1>
+
+<%= render "form", quarter: @quarter %>
+
+<div>
+  <%= link_to "Show this quarter", @quarter %> |
+  <%= link_to "Back to quarters", quarters_path %>
+</div> 

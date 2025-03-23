@@ -1,10 +1,10 @@
 class QuarterPolicy < ApplicationPolicy
   def index?
-    user.dean? || user.teacher?
+    true # Everyone can see quarters
   end
 
   def show?
-    user.dean? || user.teacher?
+    true
   end
 
   def create?
@@ -21,10 +21,10 @@ class QuarterPolicy < ApplicationPolicy
 
   class Scope < Scope
     def resolve
-      if user.dean? || user.teacher?
+      if user.dean?
         scope.all
       else
-        scope.none
+        scope.not_archived
       end
     end
   end

@@ -1,5 +1,6 @@
 class Quarter < ApplicationRecord
   has_many :courses
+  has_many :classrooms
 
   validates :name, :start_date, :end_date, presence: true
   validate :end_date_after_start_date

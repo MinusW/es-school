@@ -17,23 +17,28 @@
   </div>
 
   <div>
-    <%= form.label :class_type_id, style: "display: block" %>
-    <%= form.number_field :class_type_id %>
+    <%= form.label :class_type_id, "Class Type", style: "display: block" %>
+    <%= form.collection_select :class_type_id, ClassType.not_archived, :id, :name, { include_blank: "-- Select Class Type --" } %>
   </div>
 
   <div>
-    <%= form.label :room_id, style: "display: block" %>
-    <%= form.number_field :room_id %>
+    <%= form.label :room_id, "Room", style: "display: block" %>
+    <%= form.collection_select :room_id, Room.not_archived, :id, :name, { include_blank: "-- Select Room --" } %>
   </div>
 
   <div>
-    <%= form.label :teacher_id, style: "display: block" %>
-    <%= form.number_field :teacher_id %>
+    <%= form.label :teacher_id, "Teacher", style: "display: block" %>
+    <%= form.collection_select :teacher_id, User.with_role(:teacher), :id, :email, { include_blank: "-- Select Teacher --" } %>
+  </div>
+
+  <div>
+    <%= form.label :quarter_id, "Quarter", style: "display: block" %>
+    <%= form.collection_select :quarter_id, Quarter.not_archived, :id, :name, { include_blank: "-- No Quarter --" }, { required: false } %>
   </div>
 
   <div>
     <%= form.label :is_archived, style: "display: block" %>
-    <%= form.checkbox :is_archived %>
+    <%= form.check_box :is_archived %>
   </div>
 
   <div>
