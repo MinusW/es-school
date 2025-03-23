@@ -1,6 +1,6 @@
 class Course < ApplicationRecord
   belongs_to :quarter
-  belongs_to :module, class_name: "CourseModule"
+  belongs_to :module, class_name: "Theme"
   belongs_to :classroom
   belongs_to :teacher, class_name: "User"
 

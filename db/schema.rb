@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.0].define(version: 2025_03_23_222034) do
+ActiveRecord::Schema[8.0].define(version: 2025_03_23_223545) do
   create_table "class_types", force: :cascade do |t|
     t.string "name"
     t.text "description"
@@ -108,6 +108,14 @@ ActiveRecord::Schema[8.0].define(version: 2025_03_23_222034) do
     t.index ["classroom_id"], name: "index_students_on_classroom_id"
     t.index ["is_archived"], name: "index_students_on_is_archived"
     t.index ["user_id"], name: "index_students_on_user_id"
+  end
+
+  create_table "themes", force: :cascade do |t|
+    t.string "module_name"
+    t.text "module_description"
+    t.boolean "is_archived"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
   end
 
   create_table "to_grades", force: :cascade do |t|
