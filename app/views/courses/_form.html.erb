@@ -1,0 +1,57 @@
+<%= form_with(model: course) do |form| %>
+  <% if course.errors.any? %>
+    <div style="color: red">
+      <h2><%= pluralize(course.errors.count, "error") %> prohibited this course from being saved:</h2>
+
+      <ul>
+        <% course.errors.each do |error| %>
+          <li><%= error.full_message %></li>
+        <% end %>
+      </ul>
+    </div>
+  <% end %>
+
+  <div>
+    <%= form.label :start_time, style: "display: block" %>
+    <%= form.datetime_field :start_time %>
+  </div>
+
+  <div>
+    <%= form.label :end_time, style: "display: block" %>
+    <%= form.datetime_field :end_time %>
+  </div>
+
+  <div>
+    <%= form.label :weekday, style: "display: block" %>
+    <%= form.number_field :weekday %>
+  </div>
+
+  <div>
+    <%= form.label :quarter_id, style: "display: block" %>
+    <%= form.text_field :quarter_id %>
+  </div>
+
+  <div>
+    <%= form.label :module_id, style: "display: block" %>
+    <%= form.text_field :module_id %>
+  </div>
+
+  <div>
+    <%= form.label :classroom_id, style: "display: block" %>
+    <%= form.text_field :classroom_id %>
+  </div>
+
+  <div>
+    <%= form.label :teacher_id, style: "display: block" %>
+    <%= form.text_field :teacher_id %>
+  </div>
+
+  <div>
+    <%= form.label :is_archived, style: "display: block" %>
+    <%= form.checkbox :is_archived %>
+  </div>
+
+  <div>
+    <%= form.submit %>
+  </div>
+<% end %>

@@ -10,12 +10,46 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.0].define(version: 2025_03_23_210219) do
+ActiveRecord::Schema[8.0].define(version: 2025_03_23_215811) do
   create_table "classrooms", force: :cascade do |t|
     t.string "name"
     t.integer "class_type_id"
     t.integer "room_id"
     t.integer "teacher_id"
+    t.boolean "is_archived"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+  end
+
+  create_table "course_modules", force: :cascade do |t|
+    t.string "name"
+    t.text "description"
+    t.boolean "is_archived"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+  end
+
+  create_table "courses", force: :cascade do |t|
+    t.datetime "start_time"
+    t.datetime "end_time"
+    t.integer "weekday"
+    t.integer "quarter_id", null: false
+    t.integer "module_id", null: false
+    t.integer "classroom_id", null: false
+    t.integer "teacher_id", null: false
+    t.boolean "is_archived"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["classroom_id"], name: "index_courses_on_classroom_id"
+    t.index ["module_id"], name: "index_courses_on_module_id"
+    t.index ["quarter_id"], name: "index_courses_on_quarter_id"
+    t.index ["teacher_id"], name: "index_courses_on_teacher_id"
+  end
+
+  create_table "quarters", force: :cascade do |t|
+    t.string "name"
+    t.date "start_date"
+    t.date "end_date"
     t.boolean "is_archived"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
@@ -64,6 +98,10 @@ ActiveRecord::Schema[8.0].define(version: 2025_03_23_210219) do
     t.index ["user_id"], name: "index_users_roles_on_user_id"
   end
 
+  add_foreign_key "courses", "classrooms"
+  add_foreign_key "courses", "modules"
+  add_foreign_key "courses", "quarters"
+  add_foreign_key "courses", "teachers"
   add_foreign_key "students", "classrooms"
   add_foreign_key "students", "users"
 end

@@ -5,6 +5,7 @@ class Classroom < ApplicationRecord
 
   has_many :students
   has_many :users, through: :students
+  has_many :courses
 
   validates :name, presence: true
   validates :teacher_id, presence: true

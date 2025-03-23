@@ -1,0 +1,21 @@
+# Read about fixtures at https://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
+
+one:
+  start_time: 2025-03-23 22:52:09
+  end_time: 2025-03-23 22:52:09
+  weekday: 1
+  quarter: one
+  module: one
+  classroom: one
+  teacher: one
+  is_archived: false
+
+two:
+  start_time: 2025-03-23 22:52:09
+  end_time: 2025-03-23 22:52:09
+  weekday: 1
+  quarter: two
+  module: two
+  classroom: two
+  teacher: two
+  is_archived: false

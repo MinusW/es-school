@@ -7,6 +7,7 @@ class User < ApplicationRecord
 
   has_many :students
   has_many :classrooms, through: :students
+  has_many :courses, foreign_key: "teacher_id"
 
   def dean?
     has_role?(:dean)
