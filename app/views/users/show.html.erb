@@ -1,0 +1,32 @@
+<% content_for :title, "User Details" %>
+
+<p style="color: green"><%= notice %></p>
+
+<div>
+  <h1>User Details</h1>
+  
+  <p>
+    <strong>Email:</strong>
+    <%= @user.email %>
+  </p>
+  
+  <p>
+    <strong>Roles:</strong>
+    <%= @user.roles.map(&:name).map(&:humanize).join(', ') %>
+  </p>
+  
+  <p>
+    <strong>Address:</strong>
+    <% if @user.address %>
+      <%= "#{@user.address.street} #{@user.address.house}, #{@user.address.city} #{@user.address.npa}" %>
+      <%= link_to "View Address", @user.address %>
+    <% else %>
+      No address assigned
+    <% end %>
+  </p>
+  
+  <div>
+    <%= link_to "Edit this user", edit_user_path(@user) %> |
+    <%= link_to "Back to users", users_path %>
+  </div>
+</div> 

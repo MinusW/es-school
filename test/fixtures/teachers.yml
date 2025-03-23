@@ -1,0 +1,15 @@
+# Read about fixtures at https://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
+
+one:
+  IBAN: MyString
+  state: 1
+  is_dean: false
+  is_archived: false
+  user: one
+
+two:
+  IBAN: MyString
+  state: 1
+  is_dean: false
+  is_archived: false
+  user: two

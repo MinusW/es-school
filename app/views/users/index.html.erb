@@ -1,0 +1,39 @@
+<% content_for :title, "Users" %>
+
+<p style="color: green"><%= notice %></p>
+
+<h1>Users</h1>
+
+<div>
+  <%= link_to "New user", new_user_path %>
+</div>
+
+<table>
+  <thead>
+    <tr>
+      <th>Email</th>
+      <th>Roles</th>
+      <th>Address</th>
+      <th>Actions</th>
+    </tr>
+  </thead>
+  <tbody>
+    <% @users.each do |user| %>
+      <tr>
+        <td><%= user.email %></td>
+        <td><%= user.roles.map(&:name).map(&:humanize).join(', ') %></td>
+        <td>
+          <% if user.address %>
+            <%= "#{user.address.city}, #{user.address.street}" %>
+          <% else %>
+            No address
+          <% end %>
+        </td>
+        <td>
+          <%= link_to "Show", user %>
+          <%= link_to "Edit", edit_user_path(user) %>
+        </td>
+      </tr>
+    <% end %>
+  </tbody>
+</table> 

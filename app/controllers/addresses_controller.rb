@@ -3,25 +3,29 @@ class AddressesController < ApplicationController
 
   # GET /addresses or /addresses.json
   def index
-    @addresses = Address.all
+    @addresses = policy_scope(Address)
   end
 
   # GET /addresses/1 or /addresses/1.json
   def show
+    authorize @address
   end
 
   # GET /addresses/new
   def new
     @address = Address.new
+    authorize @address
   end
 
   # GET /addresses/1/edit
   def edit
+    authorize @address
   end
 
   # POST /addresses or /addresses.json
   def create
     @address = Address.new(address_params)
+    authorize @address
 
     respond_to do |format|
       if @address.save
@@ -36,6 +40,8 @@ class AddressesController < ApplicationController
 
   # PATCH/PUT /addresses/1 or /addresses/1.json
   def update
+    authorize @address
+
     respond_to do |format|
       if @address.update(address_params)
         format.html { redirect_to address_url(@address), notice: "Address was successfully updated." }
@@ -49,6 +55,7 @@ class AddressesController < ApplicationController
 
   # DELETE /addresses/1 or /addresses/1.json
   def destroy
+    authorize @address
     @address.destroy!
 
     respond_to do |format|
