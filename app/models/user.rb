@@ -8,6 +8,8 @@ class User < ApplicationRecord
   has_many :students
   has_many :classrooms, through: :students
   has_many :courses, foreign_key: "teacher_id"
+  has_many :grades, foreign_key: "teacher_id"
+  has_many :student_grades, through: :students, source: :grades
 
   def dean?
     has_role?(:dean)

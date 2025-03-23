@@ -2,6 +2,8 @@ class Student < ApplicationRecord
   belongs_to :user
   belongs_to :classroom
 
+  has_many :grades
+
   enum :state, { active: 0, on_break: 1, expelled: 2, medical_leave: 3, graduated: 4 }
 
   validates :state, presence: true

@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.0].define(version: 2025_03_23_215811) do
+ActiveRecord::Schema[8.0].define(version: 2025_03_23_221007) do
   create_table "classrooms", force: :cascade do |t|
     t.string "name"
     t.integer "class_type_id"
@@ -46,6 +46,20 @@ ActiveRecord::Schema[8.0].define(version: 2025_03_23_215811) do
     t.index ["teacher_id"], name: "index_courses_on_teacher_id"
   end
 
+  create_table "grades", force: :cascade do |t|
+    t.integer "student_id", null: false
+    t.integer "teacher_id", null: false
+    t.integer "course_id", null: false
+    t.decimal "grade", precision: 4, scale: 1
+    t.date "grading_date"
+    t.boolean "is_archived"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["course_id"], name: "index_grades_on_course_id"
+    t.index ["student_id"], name: "index_grades_on_student_id"
+    t.index ["teacher_id"], name: "index_grades_on_teacher_id"
+  end
+
   create_table "quarters", force: :cascade do |t|
     t.string "name"
     t.date "start_date"
@@ -78,6 +92,21 @@ ActiveRecord::Schema[8.0].define(version: 2025_03_23_215811) do
     t.index ["user_id"], name: "index_students_on_user_id"
   end
 
+  create_table "to_grades", force: :cascade do |t|
+    t.integer "module_id", null: false
+    t.integer "student_id", null: false
+    t.integer "teacher_id", null: false
+    t.integer "quarter_id", null: false
+    t.decimal "grade", precision: 2, scale: 1
+    t.date "grading_date"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["module_id"], name: "index_to_grades_on_module_id"
+    t.index ["quarter_id"], name: "index_to_grades_on_quarter_id"
+    t.index ["student_id"], name: "index_to_grades_on_student_id"
+    t.index ["teacher_id"], name: "index_to_grades_on_teacher_id"
+  end
+
   create_table "users", force: :cascade do |t|
     t.string "email", default: "", null: false
     t.string "encrypted_password", default: "", null: false
@@ -102,6 +131,13 @@ ActiveRecord::Schema[8.0].define(version: 2025_03_23_215811) do
   add_foreign_key "courses", "modules"
   add_foreign_key "courses", "quarters"
   add_foreign_key "courses", "teachers"
+  add_foreign_key "grades", "courses"
+  add_foreign_key "grades", "students"
+  add_foreign_key "grades", "teachers"
   add_foreign_key "students", "classrooms"
   add_foreign_key "students", "users"
+  add_foreign_key "to_grades", "course_modules", column: "module_id"
+  add_foreign_key "to_grades", "quarters"
+  add_foreign_key "to_grades", "students"
+  add_foreign_key "to_grades", "users", column: "teacher_id"
 end
