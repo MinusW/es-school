@@ -1,0 +1,65 @@
+<% content_for :title, "Home - ES School" %>
+
+<div class="container mx-auto px-4 py-8">
+  <header class="mb-8">
+    <h1 class="text-3xl font-bold text-center text-blue-800">ES School Management System</h1>
+  </header>
+
+  <nav class="bg-white shadow-md rounded-lg p-6 mb-8">
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+      <% if user_signed_in? %>
+        <a href="<%= classrooms_path %>" class="flex flex-col items-center p-4 bg-blue-100 hover:bg-blue-200 rounded-lg transition-colors duration-200">
+          <svg xmlns="http://www.w3.org/2000/svg" class="h-12 w-12 text-blue-600 mb-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" />
+          </svg>
+          <span class="text-lg font-medium">Classrooms</span>
+        </a>
+        
+        <% if current_user.dean? %>
+          <a href="<%= users_path %>" class="flex flex-col items-center p-4 bg-green-100 hover:bg-green-200 rounded-lg transition-colors duration-200">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-12 w-12 text-green-600 mb-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z" />
+            </svg>
+            <span class="text-lg font-medium">Users</span>
+          </a>
+        <% end %>
+        
+        <a href="<%= destroy_user_session_path %>" data-turbo-method="delete" class="flex flex-col items-center p-4 bg-red-100 hover:bg-red-200 rounded-lg transition-colors duration-200">
+          <svg xmlns="http://www.w3.org/2000/svg" class="h-12 w-12 text-red-600 mb-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
+          </svg>
+          <span class="text-lg font-medium">Sign Out</span>
+        </a>
+      <% else %>
+        <a href="<%= new_user_session_path %>" class="flex flex-col items-center p-4 bg-blue-100 hover:bg-blue-200 rounded-lg transition-colors duration-200">
+          <svg xmlns="http://www.w3.org/2000/svg" class="h-12 w-12 text-blue-600 mb-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 16l-4-4m0 0l4-4m-4 4h14m-5 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h7a3 3 0 013 3v1" />
+          </svg>
+          <span class="text-lg font-medium">Sign In</span>
+        </a>
+        
+        <a href="<%= new_user_registration_path %>" class="flex flex-col items-center p-4 bg-green-100 hover:bg-green-200 rounded-lg transition-colors duration-200">
+          <svg xmlns="http://www.w3.org/2000/svg" class="h-12 w-12 text-green-600 mb-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M18 9v3m0 0v3m0-3h3m-3 0h-3m-2-5a4 4 0 11-8 0 4 4 0 018 0zM3 20a6 6 0 0112 0v1H3v-1z" />
+          </svg>
+          <span class="text-lg font-medium">Sign Up</span>
+        </a>
+      <% end %>
+    </div>
+  </nav>
+
+  <div class="bg-white shadow-md rounded-lg p-6">
+    <h2 class="text-2xl font-bold text-gray-800 mb-4">Welcome to ES School Management System</h2>
+    <p class="text-gray-600 mb-4">
+      This system helps manage classrooms, students, and teachers. Use the navigation above to get started.
+    </p>
+    
+    <% unless user_signed_in? %>
+      <div class="bg-yellow-100 p-4 rounded-lg">
+        <p class="text-yellow-800">
+          Please sign in to access the full features of the system.
+        </p>
+      </div>
+    <% end %>
+  </div>
+</div> 

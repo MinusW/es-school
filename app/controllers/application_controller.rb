@@ -6,14 +6,15 @@ class ApplicationController < ActionController::Base
   after_action :verify_authorized, except: :index
   after_action :verify_policy_scoped, only: :index
 
-  rescue_from Pundit::NotAuthorizedError, with: :user_not_authorized
+  # Skip Pundit checks for Devise controllers as they don't use Pundit
+  skip_after_action :verify_authorized, :verify_policy_scoped, if: :devise_controller?
 
-  public
+  rescue_from Pundit::NotAuthorizedError, with: :user_not_authorized
 
   private
 
   def user_not_authorized
     flash[:alert] = "You are not authorized to perform this action."
-    redirect_to(request.referrer || root_path)
+    redirect_to(request.referer || root_path)
   end
 end

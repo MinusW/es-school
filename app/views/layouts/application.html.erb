@@ -22,7 +22,45 @@
     <%= javascript_importmap_tags %>
   </head>
 
-  <body>
-    <%= yield %>
+  <body class="bg-gray-100 min-h-screen">
+    <% if current_page?(root_path) %>
+      <%= yield %>
+    <% else %>
+      <header class="bg-blue-800 text-white shadow-md">
+        <div class="container mx-auto px-4 py-3 flex items-center justify-between">
+          <a href="<%= root_path %>" class="text-xl font-bold">ES School</a>
+          <nav>
+            <ul class="flex space-x-4">
+              <% if user_signed_in? %>
+                <li><a href="<%= classrooms_path %>" class="hover:text-blue-200">Classrooms</a></li>
+                <% if current_user.dean? %>
+                  <li><a href="<%= users_path %>" class="hover:text-blue-200">Users</a></li>
+                <% end %>
+                <li><a href="<%= destroy_user_session_path %>" data-turbo-method="delete" class="hover:text-blue-200">Sign Out</a></li>
+              <% else %>
+                <li><a href="<%= new_user_session_path %>" class="hover:text-blue-200">Sign In</a></li>
+                <li><a href="<%= new_user_registration_path %>" class="hover:text-blue-200">Sign Up</a></li>
+              <% end %>
+            </ul>
+          </nav>
+        </div>
+      </header>
+      
+      <main class="container mx-auto px-4 py-6">
+        <% if notice %>
+          <div class="bg-green-100 border-l-4 border-green-500 text-green-700 p-4 mb-4" role="alert">
+            <p><%= notice %></p>
+          </div>
+        <% end %>
+        
+        <% if alert %>
+          <div class="bg-red-100 border-l-4 border-red-500 text-red-700 p-4 mb-4" role="alert">
+            <p><%= alert %></p>
+          </div>
+        <% end %>
+        
+        <%= yield %>
+      </main>
+    <% end %>
   </body>
 </html>
