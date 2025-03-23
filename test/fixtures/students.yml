@@ -1,0 +1,13 @@
+# Read about fixtures at https://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
+
+one:
+  user: one
+  classroom: one
+  state: 1
+  is_archived: false
+
+two:
+  user: two
+  classroom: two
+  state: 1
+  is_archived: false

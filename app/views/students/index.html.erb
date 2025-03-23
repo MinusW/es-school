@@ -1,0 +1,27 @@
+<p style="color: green"><%= notice %></p>
+
+<% content_for :title, "Students" %>
+
+<div class="mx-auto max-w-4xl">
+  <div class="flex justify-between items-center mb-6">
+    <h1 class="text-2xl font-bold">Students</h1>
+    <% if policy(Student).new? %>
+      <%= link_to "New Student", new_student_path, class: "bg-blue-500 hover:bg-blue-700 text-white py-2 px-4 rounded" %>
+    <% end %>
+  </div>
+
+  <% if @students.any? %>
+    <div class="grid gap-4 md:grid-cols-2">
+      <% @students.each do |student| %>
+        <div class="border border-gray-200 rounded p-4 hover:shadow-md transition-shadow">
+          <%= render student %>
+          <%= link_to "View details", student, class: "text-blue-600 hover:text-blue-800" %>
+        </div>
+      <% end %>
+    </div>
+  <% else %>
+    <div class="bg-gray-100 p-6 rounded-lg text-center">
+      <p class="text-gray-600">No students found.</p>
+    </div>
+  <% end %>
+</div>

@@ -1,0 +1,24 @@
+<div class="bg-white shadow rounded-lg p-4 mb-4">
+  <div class="mb-4">
+    <strong class="text-gray-700">Student:</strong>
+    <%= student.user.email %>
+  </div>
+
+  <div class="mb-4">
+    <strong class="text-gray-700">Classroom:</strong>
+    <%= student.classroom.name %>
+  </div>
+
+  <div class="mb-4">
+    <strong class="text-gray-700">Status:</strong>
+    <span class="<%= student.active? ? 'text-green-600' : student.graduated? ? 'text-blue-600' : 'text-red-600' %>">
+      <%= student.state.humanize %>
+    </span>
+  </div>
+
+  <% if student.is_archived %>
+    <div class="mb-4">
+      <span class="bg-red-100 text-red-800 px-2 py-1 rounded">Archived</span>
+    </div>
+  <% end %>
+</div>

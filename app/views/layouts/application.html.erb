@@ -33,6 +33,9 @@
             <ul class="flex space-x-4">
               <% if user_signed_in? %>
                 <li><a href="<%= classrooms_path %>" class="hover:text-blue-200">Classrooms</a></li>
+                <% if current_user.dean? || current_user.teacher? %>
+                  <li><a href="<%= students_path %>" class="hover:text-blue-200">Students</a></li>
+                <% end %>
                 <% if current_user.dean? %>
                   <li><a href="<%= users_path %>" class="hover:text-blue-200">Users</a></li>
                 <% end %>

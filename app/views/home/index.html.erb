@@ -15,6 +15,17 @@
           <span class="text-lg font-medium">Classrooms</span>
         </a>
         
+        <% if current_user.dean? || current_user.teacher? %>
+          <a href="<%= students_path %>" class="flex flex-col items-center p-4 bg-purple-100 hover:bg-purple-200 rounded-lg transition-colors duration-200">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-12 w-12 text-purple-600 mb-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2" />
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 3a4 4 0 100 8 4 4 0 000-8z" />
+            </svg>
+            <span class="text-lg font-medium">Students</span>
+          </a>
+        <% end %>
+        
         <% if current_user.dean? %>
           <a href="<%= users_path %>" class="flex flex-col items-center p-4 bg-green-100 hover:bg-green-200 rounded-lg transition-colors duration-200">
             <svg xmlns="http://www.w3.org/2000/svg" class="h-12 w-12 text-green-600 mb-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">

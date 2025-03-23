@@ -1,0 +1,17 @@
+<div class="mx-auto max-w-2xl">
+  <h1 class="text-2xl font-bold mb-4">Student Details</h1>
+
+  <%= render @student %>
+
+  <div class="flex space-x-2 mt-4">
+    <% if policy(@student).edit? %>
+      <%= link_to "Edit", edit_student_path(@student), class: "bg-blue-500 hover:bg-blue-700 text-white py-2 px-4 rounded" %>
+    <% end %>
+    
+    <%= link_to "Back", students_path, class: "bg-gray-500 hover:bg-gray-700 text-white py-2 px-4 rounded" %>
+    
+    <% if policy(@student).destroy? && !@student.is_archived %>
+      <%= button_to "Archive", @student, method: :delete, class: "bg-red-500 hover:bg-red-700 text-white py-2 px-4 rounded", form: { data: { turbo_confirm: "Are you sure you want to archive this student?" } } %>
+    <% end %>
+  </div>
+</div>

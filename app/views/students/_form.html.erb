@@ -1,0 +1,37 @@
+<%= form_with(model: student) do |form| %>
+  <% if student.errors.any? %>
+    <div style="color: red">
+      <h2><%= pluralize(student.errors.count, "error") %> prohibited this student from being saved:</h2>
+
+      <ul>
+        <% student.errors.each do |error| %>
+          <li><%= error.full_message %></li>
+        <% end %>
+      </ul>
+    </div>
+  <% end %>
+
+  <div>
+    <%= form.label :user_id, "Student", style: "display: block" %>
+    <%= form.collection_select :user_id, User.with_role(:student), :id, :email, {prompt: "Select student"}, {class: "form-control"} %>
+  </div>
+
+  <div>
+    <%= form.label :classroom_id, style: "display: block" %>
+    <%= form.collection_select :classroom_id, Classroom.not_archived, :id, :name, {prompt: "Select classroom"}, {class: "form-control"} %>
+  </div>
+
+  <div>
+    <%= form.label :state, style: "display: block" %>
+    <%= form.select :state, Student.states.keys.map { |state| [state.humanize, state] }, {}, {class: "form-control"} %>
+  </div>
+
+  <div>
+    <%= form.label :is_archived, style: "display: block" %>
+    <%= form.check_box :is_archived %>
+  </div>
+
+  <div>
+    <%= form.submit class: "bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded mt-3" %>
+  </div>
+<% end %>

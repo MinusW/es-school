@@ -1,4 +1,5 @@
 Rails.application.routes.draw do
+  resources :students
   resources :classrooms
   devise_for :users
   resources :users, except: :destroy
