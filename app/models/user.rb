@@ -4,4 +4,16 @@ class User < ApplicationRecord
   # :confirmable, :lockable, :timeoutable, :trackable and :omniauthable
   devise :database_authenticatable, :registerable,
          :recoverable, :rememberable, :validatable
+
+  def dean?
+    has_role?(:dean)
+  end
+
+  def teacher?
+    has_role?(:teacher)
+  end
+
+  def student?
+    has_role?(:student)
+  end
 end
