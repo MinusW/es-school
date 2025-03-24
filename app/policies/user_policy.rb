@@ -5,25 +5,33 @@ class UserPolicy < ApplicationPolicy
   # code, beware of possible changes to the ancestors:
   # https://gist.github.com/Burgestrand/4b4bc22f31c8a95c425fc0e30d7ef1f5
 
-  class Scope < ApplicationPolicy::Scope
-    def index?
-      user.dean?
-    end
+  def index?
+    user.dean?
+  end
 
-    def show?
-      user.dean? || record == user
-    end
+  def show?
+    user.dean? || record == user
+  end
 
-    def create?
-      user.dean?
-    end
+  def create?
+    user.dean?
+  end
 
-    def update?
-      user.dean? && !record.has_role?(:dean)
-    end
+  def update?
+    user.dean? && !record.has_role?(:dean)
+  end
 
-    def destroy?
-      user.dean? && !record.has_role?(:dean)
+  def destroy?
+    user.dean? && !record.has_role?(:dean)
+  end
+
+  class Scope < Scope
+    def resolve
+      if user.dean?
+        scope.all
+      else
+        scope.where(id: user.id)
+      end
     end
   end
 end

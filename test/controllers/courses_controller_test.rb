@@ -17,7 +17,7 @@ class CoursesControllerTest < ActionDispatch::IntegrationTest
 
   test "should create course" do
     assert_difference("Course.count") do
-      post courses_url, params: { course: { classroom_id: @course.classroom_id, end_time: @course.end_time, is_archived: @course.is_archived, module_id: @course.module_id, quarter_id: @course.quarter_id, start_time: @course.start_time, teacher_id: @course.teacher_id, weekday: @course.weekday } }
+      post courses_url, params: { course: { classroom_id: @course.classroom_id, end_time: @course.end_time, is_archived: @course.is_archived, theme_id: @course.theme_id, quarter_id: @course.quarter_id, start_time: @course.start_time, teacher_id: @course.teacher_id, weekday: @course.weekday } }
     end
 
     assert_redirected_to course_url(Course.last)
@@ -34,7 +34,7 @@ class CoursesControllerTest < ActionDispatch::IntegrationTest
   end
 
   test "should update course" do
-    patch course_url(@course), params: { course: { classroom_id: @course.classroom_id, end_time: @course.end_time, is_archived: @course.is_archived, module_id: @course.module_id, quarter_id: @course.quarter_id, start_time: @course.start_time, teacher_id: @course.teacher_id, weekday: @course.weekday } }
+    patch course_url(@course), params: { course: { classroom_id: @course.classroom_id, end_time: @course.end_time, is_archived: @course.is_archived, theme_id: @course.theme_id, quarter_id: @course.quarter_id, start_time: @course.start_time, teacher_id: @course.teacher_id, weekday: @course.weekday } }
     assert_redirected_to course_url(@course)
   end
 

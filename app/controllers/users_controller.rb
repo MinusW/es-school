@@ -1,8 +1,8 @@
 class UsersController < ApplicationController
   before_action :authenticate_user!
-  before_action :authorize_user!
 
   def index
+    authorize User  # Authorize for index action explicitly
     @users = policy_scope(User)
   end
 
@@ -49,10 +49,6 @@ class UsersController < ApplicationController
   end
 
   private
-
-  def authorize_user!
-    authorize User
-  end
 
   def user_params
     params.require(:user).permit(:email, :password, :password_confirmation, :address_id, role_ids: [])

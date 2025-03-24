@@ -1,5 +1,5 @@
 class CourseModule < ApplicationRecord
-  has_many :courses, foreign_key: "module_id"
+  has_many :courses, foreign_key: "theme_id"
 
   validates :name, presence: true
 

@@ -17,7 +17,7 @@ class CoursesTest < ApplicationSystemTestCase
     fill_in "Classroom", with: @course.classroom_id
     fill_in "End time", with: @course.end_time
     check "Is archived" if @course.is_archived
-    fill_in "Module", with: @course.module_id
+    fill_in "Module", with: @course.theme_id
     fill_in "Quarter", with: @course.quarter_id
     fill_in "Start time", with: @course.start_time
     fill_in "Teacher", with: @course.teacher_id
@@ -35,7 +35,7 @@ class CoursesTest < ApplicationSystemTestCase
     fill_in "Classroom", with: @course.classroom_id
     fill_in "End time", with: @course.end_time.to_s
     check "Is archived" if @course.is_archived
-    fill_in "Module", with: @course.module_id
+    fill_in "Module", with: @course.theme_id
     fill_in "Quarter", with: @course.quarter_id
     fill_in "Start time", with: @course.start_time.to_s
     fill_in "Teacher", with: @course.teacher_id
