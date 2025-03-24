@@ -54,16 +54,16 @@ ActiveRecord::Schema[8.0].define(version: 2025_03_23_231956) do
     t.datetime "end_time"
     t.integer "weekday"
     t.integer "quarter_id", null: false
-    t.integer "module_id", null: false
+    t.integer "theme_id", null: false
     t.integer "classroom_id", null: false
     t.integer "teacher_id", null: false
     t.boolean "is_archived"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.index ["classroom_id"], name: "index_courses_on_classroom_id"
-    t.index ["module_id"], name: "index_courses_on_module_id"
     t.index ["quarter_id"], name: "index_courses_on_quarter_id"
     t.index ["teacher_id"], name: "index_courses_on_teacher_id"
+    t.index ["theme_id"], name: "index_courses_on_theme_id"
   end
 
   create_table "grades", force: :cascade do |t|
@@ -141,21 +141,6 @@ ActiveRecord::Schema[8.0].define(version: 2025_03_23_231956) do
     t.datetime "updated_at", null: false
   end
 
-  create_table "to_grades", force: :cascade do |t|
-    t.integer "module_id", null: false
-    t.integer "student_id", null: false
-    t.integer "teacher_id", null: false
-    t.integer "quarter_id", null: false
-    t.decimal "grade", precision: 2, scale: 1
-    t.date "grading_date"
-    t.datetime "created_at", null: false
-    t.datetime "updated_at", null: false
-    t.index ["module_id"], name: "index_to_grades_on_module_id"
-    t.index ["quarter_id"], name: "index_to_grades_on_quarter_id"
-    t.index ["student_id"], name: "index_to_grades_on_student_id"
-    t.index ["teacher_id"], name: "index_to_grades_on_teacher_id"
-  end
-
   create_table "users", force: :cascade do |t|
     t.string "email", default: "", null: false
     t.string "encrypted_password", default: "", null: false
@@ -180,18 +165,14 @@ ActiveRecord::Schema[8.0].define(version: 2025_03_23_231956) do
 
   add_foreign_key "classrooms", "quarters"
   add_foreign_key "courses", "classrooms"
-  add_foreign_key "courses", "modules"
   add_foreign_key "courses", "quarters"
   add_foreign_key "courses", "teachers"
+  add_foreign_key "courses", "themes"
   add_foreign_key "grades", "courses"
   add_foreign_key "grades", "students"
   add_foreign_key "grades", "teachers"
   add_foreign_key "students", "classrooms"
   add_foreign_key "students", "users"
   add_foreign_key "teachers", "users"
-  add_foreign_key "to_grades", "course_modules", column: "module_id"
-  add_foreign_key "to_grades", "quarters"
-  add_foreign_key "to_grades", "students"
-  add_foreign_key "to_grades", "users", column: "teacher_id"
   add_foreign_key "users", "addresses"
 end

@@ -5,7 +5,7 @@ class CreateCourses < ActiveRecord::Migration[8.0]
       t.datetime :end_time
       t.integer :weekday
       t.references :quarter, null: false, foreign_key: true
-      t.references :module, null: false, foreign_key: true
+      t.references :theme, null: false, foreign_key: true
       t.references :classroom, null: false, foreign_key: true
       t.references :teacher, null: false, foreign_key: true
       t.boolean :is_archived

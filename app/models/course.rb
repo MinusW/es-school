@@ -1,8 +1,8 @@
 class Course < ApplicationRecord
   belongs_to :quarter
-  belongs_to :module, class_name: "Theme"
+  belongs_to :theme, class_name: "Theme"
   belongs_to :classroom
-  belongs_to :teacher, class_name: "User"
+  belongs_to :teacher, class_name: "Teacher"
 
   has_many :grades
 
@@ -25,7 +25,7 @@ class Course < ApplicationRecord
   def no_overlapping_courses
     return unless start_time.present? && end_time.present? && weekday.present? && classroom_id.present?
 
-    overlapping_courses = Course.where(classroom_id: classroom_id, weekday: weekdays[weekday])
+    overlapping_courses = Course.where(classroom_id: classroom_id, weekday: self.class.weekdays[weekday])
                                 .where.not(id: id)
                                 .where("start_time < ? AND end_time > ?", end_time, start_time)
                                 .not_archived

@@ -1,5 +1,5 @@
 class Classroom < ApplicationRecord
-  belongs_to :teacher
+  belongs_to :teacher, class_name: "Teacher"
   belongs_to :class_type
   belongs_to :room
   belongs_to :quarter, optional: true
