@@ -1,0 +1,109 @@
+<%# Add FullCalendar and dependencies %>
+<% content_for :head do %>
+  <link href="https://cdn.jsdelivr.net/npm/fullcalendar@5.11.3/main.min.css" rel="stylesheet">
+  <script src="https://cdn.jsdelivr.net/npm/fullcalendar@5.11.3/main.min.js"></script>
+
+  <style>
+    #calendar {
+      margin: 20px auto;
+      padding: 0 10px;
+    }
+    .fc-event {
+      cursor: pointer;
+    }
+    .fc-event-title {
+      font-weight: bold;
+    }
+  </style>
+
+  <script>
+    function initializeCalendar() {
+      var calendarEl = document.getElementById('calendar');
+      if (!calendarEl) return; // Exit if element not found
+      
+      // Create events array
+      var events = [
+        <% @courses.each do |course| %>
+          {
+            title: '<%= course.theme.module_name %>',
+            description: 'Class: <%= course.classroom.name %>\nRoom: <%= course.classroom.room.name %>',
+            daysOfWeek: [ <%= 
+              case course.weekday
+              when 'monday' then 1
+              when 'tuesday' then 2
+              when 'wednesday' then 3
+              when 'thursday' then 4
+              when 'friday' then 5
+              end 
+            %> ],
+            startTime: '<%= course.start_time.strftime("%H:%M") %>',
+            endTime: '<%= course.end_time.strftime("%H:%M") %>',
+            backgroundColor: '<%= "##{Digest::MD5.hexdigest(course.theme.module_name)[0..5]}" %>'
+          },
+        <% end %>
+      ];
+      
+      console.log('Events:', events);  // Debug log
+
+      var calendar = new FullCalendar.Calendar(calendarEl, {
+        initialView: 'timeGridWeek',
+        slotMinTime: '07:00:00',
+        slotMaxTime: '19:00:00',
+        headerToolbar: {
+          left: 'prev,next today',
+          center: 'title',
+          right: 'timeGridWeek,timeGridDay'
+        },
+        weekends: false,
+        allDaySlot: false,
+        height: 'auto',
+        events: events,
+        eventDidMount: function(info) {
+          console.log('Event mounted:', info.event);  // Debug log
+          info.el.title = info.event.extendedProps.description;
+        }
+      });
+
+      calendar.render();
+    }
+
+    // Initialize on DOMContentLoaded
+    document.addEventListener('DOMContentLoaded', initializeCalendar);
+    // Initialize on Turbo load
+    document.addEventListener('turbo:load', initializeCalendar);
+    // Cleanup on Turbo cache
+    document.addEventListener('turbo:before-cache', function() {
+      var calendarEl = document.getElementById('calendar');
+      if (calendarEl && calendarEl.classList.contains('fc')) {
+        calendarEl.innerHTML = '';
+      }
+    });
+  </script>
+<% end %>
+
+<div class="container mt-4">
+  <h2 class="mb-4">Teaching Schedule - <%= @teacher.user.full_name %></h2>
+
+  <div id="calendar"></div>
+
+  <div class="mt-3">
+    <%= link_to "Back to Profile", teacher_path(@teacher), class: "btn btn-secondary" %>
+  </div>
+</div>
+
+<%# Debug information %>
+<div class="container mt-4" style="display: none;">
+  <div class="card">
+    <div class="card-body">
+      <h5 class="card-title">Debug Info</h5>
+      <% @courses.each do |course| %>
+        <div>
+          <%= course.theme.module_name %> - 
+          <%= course.weekday %> - 
+          <%= course.start_time.strftime("%H:%M") %> - 
+          <%= course.end_time.strftime("%H:%M") %>
+        </div>
+      <% end %>
+    </div>
+  </div>
+</div> 

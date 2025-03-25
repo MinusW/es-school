@@ -7,6 +7,10 @@ class ClassroomPolicy < ApplicationPolicy
     true # Everyone can see individual classroom details
   end
 
+  def calendar?
+    true # Everyone can see the calendar
+  end
+
   def create?
     user.dean?
   end

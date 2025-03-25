@@ -3,8 +3,15 @@
 <%= render @teacher %>
 
 <div>
-  <%= link_to "Edit this teacher", edit_teacher_path(@teacher) %> |
+  <% if policy(@teacher).calendar? %>
+    <%= link_to "View Teaching Schedule", calendar_teacher_path(@teacher), class: "btn btn-primary" %>
+  <% end %>
+  <% if policy(@teacher).edit? %>
+    <%= link_to "Edit this teacher", edit_teacher_path(@teacher) %> |
+  <% end %>
   <%= link_to "Back to teachers", teachers_path %>
 
-  <%= button_to "Destroy this teacher", @teacher, method: :delete %>
+  <% if policy(@teacher).destroy? %>
+    <%= button_to "Destroy this teacher", @teacher, method: :delete %>
+  <% end %>
 </div>

@@ -7,12 +7,20 @@ Rails.application.routes.draw do
 
   # Application resources
   resources :users, except: :destroy
-  resources :teachers
+  resources :teachers do
+    member do
+      get :calendar
+    end
+  end
   resources :addresses
   resources :rooms
   resources :class_types
   resources :themes
-  resources :classrooms
+  resources :classrooms do
+    member do
+      get :calendar
+    end
+  end
   resources :students
   resources :courses
   resources :grades

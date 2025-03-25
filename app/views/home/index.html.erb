@@ -1,23 +1,121 @@
 <% content_for :title, "Home - ES School" %>
 
-<h1>ES School Management System</h1>
+<div class="px-4 py-5 my-5 text-center">
+  <h1 class="display-5 fw-bold text-body-emphasis">Welcome to ES School</h1>
+  <div class="col-lg-6 mx-auto">
+    <p class="lead mb-4">
+      Your comprehensive school management system for managing classes, students, and schedules.
+    </p>
+    
+    <% if user_signed_in? %>
+      <div class="d-grid gap-2 d-sm-flex justify-content-sm-center">
+        <% if current_user.has_role?(:dean) %>
+          <%= link_to "Manage School", users_path, class: "btn btn-primary btn-lg px-4 gap-3 me-2" %>
+          <% if current_user.teacher.present? %>
+            <%= link_to "View My Schedule", calendar_teacher_path(current_user.teacher), class: "btn btn-outline-primary btn-lg px-4" %>
+          <% end %>
+        <% elsif current_user.has_role?(:teacher) %>
+          <%= link_to "View My Schedule", calendar_teacher_path(current_user.teacher), class: "btn btn-primary btn-lg px-4 gap-3" %>
+        <% elsif current_user.has_role?(:student) %>
+          <%= link_to "View My Class", classroom_path(current_user.classrooms.first), class: "btn btn-primary btn-lg px-4 gap-3" if current_user.classrooms.any? %>
+        <% end %>
+      </div>
+    <% else %>
+      <div class="d-grid gap-2 d-sm-flex justify-content-sm-center">
+        <%= link_to "Sign In", new_user_session_path, class: "btn btn-primary btn-lg px-4 gap-3" %>
+      </div>
+    <% end %>
+  </div>
+</div>
 
-<ul>
-  <% if user_signed_in? %>
-    <li><%= link_to "Classrooms", classrooms_path %></li>
-    <li><%= link_to "Students", students_path %></li>
-    <li><%= link_to "Courses", courses_path %></li>
-    <li><%= link_to "Grades", grades_path %></li>
-    <li><%= link_to "Users", users_path %></li>
-    <li><%= link_to "Teachers", teachers_path %></li>
-    <li><%= link_to "Rooms", rooms_path %></li>
-    <li><%= link_to "Class Types", class_types_path %></li>
-    <li><%= link_to "Themes", themes_path %></li>
-    <li><%= link_to "Addresses", addresses_path %></li>
-    <li><%= link_to "Quarters", quarters_path %></li>
-    <li><%= link_to "Sign Out", destroy_user_session_path, data: { turbo_method: :delete } %></li>
-  <% else %>
-    <li><%= link_to "Sign In", new_user_session_path %></li>
-    <li><%= link_to "Sign Up", new_user_registration_path %></li>
-  <% end %>
-</ul> 
+<% if user_signed_in? %>
+  <div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-4 mb-5">
+    <% if current_user.has_role?(:dean) %>
+      <div class="col">
+        <div class="card h-100">
+          <div class="card-body">
+            <h5 class="card-title">Users</h5>
+            <p class="card-text">Manage all users in the system including teachers and students.</p>
+            <%= link_to "Manage Users", users_path, class: "btn btn-outline-primary" %>
+          </div>
+        </div>
+      </div>
+      
+      <div class="col">
+        <div class="card h-100">
+          <div class="card-body">
+            <h5 class="card-title">Classes</h5>
+            <p class="card-text">Manage classrooms, schedules, and course assignments.</p>
+            <%= link_to "Manage Classes", classrooms_path, class: "btn btn-outline-primary" %>
+          </div>
+        </div>
+      </div>
+      
+      <div class="col">
+        <div class="card h-100">
+          <div class="card-body">
+            <h5 class="card-title">Resources</h5>
+            <p class="card-text">Manage rooms, themes, and other school resources.</p>
+            <%= link_to "Manage Resources", rooms_path, class: "btn btn-outline-primary" %>
+          </div>
+        </div>
+      </div>
+
+      <% if current_user.teacher.present? %>
+        <div class="col">
+          <div class="card h-100">
+            <div class="card-body">
+              <h5 class="card-title">My Schedule</h5>
+              <p class="card-text">View your teaching schedule and class assignments.</p>
+              <%= link_to "View Schedule", calendar_teacher_path(current_user.teacher), class: "btn btn-outline-primary" %>
+            </div>
+          </div>
+        </div>
+        
+        <div class="col">
+          <div class="card h-100">
+            <div class="card-body">
+              <h5 class="card-title">My Classes</h5>
+              <p class="card-text">View and manage your assigned classes and students.</p>
+              <%= link_to "View Classes", classrooms_path, class: "btn btn-outline-primary" %>
+            </div>
+          </div>
+        </div>
+      <% end %>
+    <% end %>
+
+    <% if current_user.has_role?(:teacher) && !current_user.has_role?(:dean) %>
+      <div class="col">
+        <div class="card h-100">
+          <div class="card-body">
+            <h5 class="card-title">My Schedule</h5>
+            <p class="card-text">View your teaching schedule and class assignments.</p>
+            <%= link_to "View Schedule", calendar_teacher_path(current_user.teacher), class: "btn btn-outline-primary" %>
+          </div>
+        </div>
+      </div>
+      
+      <div class="col">
+        <div class="card h-100">
+          <div class="card-body">
+            <h5 class="card-title">My Classes</h5>
+            <p class="card-text">View and manage your assigned classes and students.</p>
+            <%= link_to "View Classes", classrooms_path, class: "btn btn-outline-primary" %>
+          </div>
+        </div>
+      </div>
+    <% end %>
+
+    <% if current_user.has_role?(:student) && current_user.classrooms.any? %>
+      <div class="col">
+        <div class="card h-100">
+          <div class="card-body">
+            <h5 class="card-title">My Class</h5>
+            <p class="card-text">View your class schedule and information.</p>
+            <%= link_to "View Class", classroom_path(current_user.classrooms.first), class: "btn btn-outline-primary" %>
+          </div>
+        </div>
+      </div>
+    <% end %>
+  </div>
+<% end %> 

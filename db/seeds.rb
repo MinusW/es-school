@@ -31,118 +31,133 @@ ActiveRecord::Base.connection.execute('PRAGMA foreign_keys = ON;')
 roles = %w[student teacher dean]
 roles.each { |role| Role.create(name: role) }
 
-# Create test users with recognizable credentials
 # Create a dean user
 dean = User.create!(
   email: "dean@example.com",
   password: "password",
-  password_confirmation: "password"
+  password_confirmation: "password",
+  first_name: "John",
+  last_name: "Dean"
 )
 dean.add_role(:dean)
 
-# Create teacher users
-teacher1 = User.create!(
-  email: "teacher1@example.com",
-  password: "password",
-  password_confirmation: "password"
-)
-teacher1.add_role(:teacher)
-
-teacher2 = User.create!(
-  email: "teacher2@example.com",
-  password: "password",
-  password_confirmation: "password"
-)
-teacher2.add_role(:teacher)
-
-# Create student users
-student1 = User.create!(
-  email: "student1@example.com",
-  password: "password",
-  password_confirmation: "password"
-)
-student1.add_role(:student)
-
-student2 = User.create!(
-  email: "student2@example.com",
-  password: "password",
-  password_confirmation: "password"
-)
-student2.add_role(:student)
-
-student3 = User.create!(
-  email: "student3@example.com",
-  password: "password",
-  password_confirmation: "password"
-)
-student3.add_role(:student)
-
-# Create a normal user with no specific role
-normal_user = User.create!(
-  email: "normal@example.com",
-  password: "password",
-  password_confirmation: "password"
-)
-
-# Store all users in an array for later use
-users = [ dean, teacher1, teacher2, student1, student2, student3, normal_user ]
-
 # Create teachers
 teachers = []
-[ teacher1, teacher2 ].each do |user|
-  teachers << Teacher.create!(user: user, IBAN: "DE89370400440532013000", state: :active, is_dean: false, is_archived: false)
-end
-
-# Create a dean teacher
-dean_teacher = Teacher.create!(user: dean, IBAN: "DE89370400440532013000", state: :active, is_dean: true, is_archived: false)
-
-# Create quarters
-quarters = []
-4.times do |i|
-  quarters << Quarter.create!(name: "Quarter #{i + 1}", start_date: Date.today + i.months, end_date: Date.today + (i + 1).months, is_archived: false)
-end
-
-# Create class types
-class_types = []
 3.times do |i|
-  class_types << ClassType.create!(name: "Class Type #{i + 1}", description: "Description for class type #{i + 1}", is_archived: false)
-end
-
-# Create rooms
-rooms = []
-3.times do |i|
-  rooms << Room.create!(name: "Room #{i + 1}", building: "Building #{i + 1}", floor: i + 1, capacity: (i + 1) * 10, is_archived: false)
-end
-
-# Create classrooms
-classrooms = []
-3.times do |i|
-  teacher = i == 0 ? dean_teacher : teachers[i-1]
-  classrooms << Classroom.create!(name: "Classroom #{i + 1}", class_type: class_types[i], room: rooms[i], teacher: teacher, quarter: quarters[i], is_archived: false)
+  user = User.create!(
+    email: "teacher#{i+1}@example.com",
+    password: "password",
+    password_confirmation: "password",
+    first_name: "Teacher",
+    last_name: "#{i+1}"
+  )
+  user.add_role(:teacher)
+  teachers << Teacher.create!(
+    user: user,
+    IBAN: "CH#{rand(1000..9999)} #{rand(1000..9999)} #{rand(1000..9999)} #{rand(1000..9999)}",
+    state: :active,
+    is_archived: false
+  )
 end
 
 # Create students
 students = []
-[ student1, student2, student3 ].each_with_index do |user, index|
-  students << Student.create!(user: user, classroom: classrooms[index % classrooms.size], state: :active, is_archived: false)
+5.times do |i|
+  user = User.create!(
+    email: "student#{i+1}@example.com",
+    password: "password",
+    password_confirmation: "password",
+    first_name: "Student",
+    last_name: "#{i+1}"
+  )
+  user.add_role(:student)
+  students << user
 end
 
-# Create themes
-themes = []
-3.times do |i|
-  themes << Theme.create!(module_name: "Theme #{i + 1}", module_description: "Description for theme #{i + 1}", is_archived: false)
+# Create a quarter
+quarter = Quarter.create!(
+  name: "Spring 2024",
+  start_date: Date.new(2024, 1, 1),
+  end_date: Date.new(2024, 3, 31),
+  is_archived: false
+)
+
+# Create a room
+room = Room.create!(
+  name: "Room 101",
+  capacity: 30,
+  is_archived: false
+)
+
+# Create a class type
+class_type = ClassType.create!(
+  name: "Regular Class",
+  description: "Standard classroom setting",
+  is_archived: false
+)
+
+# Create a classroom
+classroom = Classroom.create!(
+  name: "Class 1A",
+  teacher: teachers.first,
+  class_type: class_type,
+  room: room,
+  quarter: quarter,
+  is_archived: false
+)
+
+# Create students in the classroom
+students.each do |student|
+  Student.create!(
+    user: student,
+    classroom: classroom,
+    state: :active,
+    is_archived: false
+  )
 end
+
+# Create themes (subjects)
+themes = [
+  Theme.create!(module_name: "Mathematics", module_description: "Advanced Mathematics", is_archived: false),
+  Theme.create!(module_name: "Physics", module_description: "General Physics", is_archived: false),
+  Theme.create!(module_name: "Chemistry", module_description: "Organic Chemistry", is_archived: false),
+  Theme.create!(module_name: "Biology", module_description: "Cell Biology", is_archived: false),
+  Theme.create!(module_name: "Literature", module_description: "World Literature", is_archived: false)
+]
+
+# Create a weekly schedule
+schedule = [
+  # Monday
+  { weekday: :monday, start_time: "08:00", end_time: "09:30", theme: themes[0], teacher: teachers[0] }, # Math
+  { weekday: :monday, start_time: "10:00", end_time: "11:30", theme: themes[1], teacher: teachers[1] }, # Physics
+
+  # Tuesday
+  { weekday: :tuesday, start_time: "09:00", end_time: "10:30", theme: themes[2], teacher: teachers[2] }, # Chemistry
+  { weekday: :tuesday, start_time: "13:00", end_time: "14:30", theme: themes[0], teacher: teachers[0] }, # Math
+
+  # Wednesday
+  { weekday: :wednesday, start_time: "08:00", end_time: "09:30", theme: themes[3], teacher: teachers[1] }, # Biology
+  { weekday: :wednesday, start_time: "10:00", end_time: "11:30", theme: themes[4], teacher: teachers[2] }, # Literature
+
+  # Thursday
+  { weekday: :thursday, start_time: "09:00", end_time: "10:30", theme: themes[1], teacher: teachers[1] }, # Physics
+  { weekday: :thursday, start_time: "13:00", end_time: "14:30", theme: themes[2], teacher: teachers[2] }, # Chemistry
+
+  # Friday
+  { weekday: :friday, start_time: "08:00", end_time: "09:30", theme: themes[0], teacher: teachers[0] }, # Math
+  { weekday: :friday, start_time: "10:00", end_time: "11:30", theme: themes[3], teacher: teachers[1] }  # Biology
+]
 
 # Create courses
-courses = []
-3.times do |i|
-  teacher = i == 0 ? dean_teacher : teachers[i-1]
-  courses << Course.create!(start_time: Time.now, end_time: Time.now + 1.hour, weekday: :monday, quarter: quarters[i], theme: themes[i], classroom: classrooms[i], teacher: teacher, is_archived: false)
-end
-
-# Create grades
-students.each do |student|
-  courses.each do |course|
-    Grade.create!(student: student, teacher: course.teacher, course: course, grade: rand(60..100) / 10.0, grading_date: Date.today, is_archived: false)
-  end
+schedule.each do |course_data|
+  Course.create!(
+    start_time: Time.parse(course_data[:start_time]),
+    end_time: Time.parse(course_data[:end_time]),
+    weekday: course_data[:weekday],
+    quarter: quarter,
+    theme: course_data[:theme],
+    classroom: classroom,
+    teacher: course_data[:teacher],
+    is_archived: false
+  )
 end

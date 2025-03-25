@@ -19,6 +19,20 @@ class TeacherPolicy < ApplicationPolicy
     user.dean? # Only deans can delete teachers
   end
 
+  def calendar?
+    return true if user.dean? # Deans can see all calendars
+    return true if record.user_id == user.id # Teachers can see their own calendar
+    
+    # Students can only see calendars of teachers who teach their classes
+    if user.student?
+      user.classrooms.any? do |classroom|
+        classroom.teacher_id == record.id || classroom.courses.not_archived.where(teacher_id: record.id).exists?
+      end
+    else
+      false # Other users cannot see calendars
+    end
+  end
+
   class Scope < Scope
     def resolve
       if user.dean?

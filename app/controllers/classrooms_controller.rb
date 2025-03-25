@@ -1,13 +1,13 @@
 class ClassroomsController < ApplicationController
   before_action :authenticate_user!
-  before_action :authorize_classroom, except: [ :index, :show ]  # Only allow authorized actions
+  before_action :authorize_classroom, except: [ :index, :show, :calendar ]  # Only allow authorized actions
+  before_action :set_classroom, only: [:show, :edit, :update, :destroy, :calendar]
 
   def index
     @classrooms = policy_scope(Classroom)  # Pundit scope for classrooms
   end
 
   def show
-    @classroom = Classroom.find(params[:id])
     authorize @classroom  # Ensure authorization for the show action
   end
 
@@ -27,12 +27,10 @@ class ClassroomsController < ApplicationController
   end
 
   def edit
-    @classroom = Classroom.find(params[:id])
     authorize @classroom
   end
 
   def update
-    @classroom = Classroom.find(params[:id])
     authorize @classroom
     if @classroom.update(classroom_params)
       redirect_to @classroom, notice: "Classroom updated successfully."
@@ -42,10 +40,14 @@ class ClassroomsController < ApplicationController
   end
 
   def destroy
-    @classroom = Classroom.find(params[:id])
     authorize @classroom
     @classroom.update(is_archived: true)  # Instead of delete, archive
     redirect_to classrooms_path, notice: "Classroom archived successfully."
+  end
+
+  def calendar
+    authorize @classroom
+    @courses = @classroom.courses.not_archived.order(:weekday, :start_time)
   end
 
   private
@@ -56,5 +58,9 @@ class ClassroomsController < ApplicationController
 
   def authorize_classroom
     authorize Classroom  # Ensure this is authorized with Pundit
+  end
+
+  def set_classroom
+    @classroom = Classroom.find(params[:id])
   end
 end
