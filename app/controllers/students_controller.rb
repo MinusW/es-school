@@ -1,5 +1,7 @@
 class StudentsController < ApplicationController
-  before_action :set_student, only: %i[ show edit update destroy ]
+  before_action :set_student, only: %i[ show edit update destroy generate_pdf ]
+  before_action :authenticate_user!
+  before_action :authorize_student, only: [ :show, :generate_pdf ]
 
   # GET /students or /students.json
   def index
@@ -69,6 +71,19 @@ class StudentsController < ApplicationController
     end
   end
 
+  def generate_pdf
+    authorize @student
+    respond_to do |format|
+      format.pdf do
+        pdf = GradePdfGenerator.new(@student).generate
+        send_data pdf.render,
+                  filename: "grades_#{@student.user.full_name.parameterize}.pdf",
+                  type: "application/pdf",
+                  disposition: "inline"
+      end
+    end
+  end
+
   private
     # Use callbacks to share common setup or constraints between actions.
     def set_student
@@ -78,5 +93,12 @@ class StudentsController < ApplicationController
     # Only allow a list of trusted parameters through.
     def student_params
       params.require(:student).permit(:user_id, :classroom_id, :state, :is_archived)
+    end
+
+    def authorize_student
+      unless current_user.dean? || (current_user.student? && current_user.students.include?(@student))
+        flash[:alert] = "You are not authorized to view this student's grades."
+        redirect_to root_path
+      end
     end
 end

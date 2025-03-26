@@ -21,7 +21,11 @@ Rails.application.routes.draw do
       get :calendar
     end
   end
-  resources :students
+  resources :students do
+    member do
+      get "generate_pdf"
+    end
+  end
   resources :courses
   resources :grades
   resources :quarters

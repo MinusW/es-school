@@ -9,9 +9,16 @@
     <div class="card-body">
       <div class="d-flex justify-content-between align-items-center mb-3">
         <h2 class="card-title mb-0"><%= @student.user.full_name %></h2>
-        <% if policy(@student).update? %>
-          <%= link_to "Edit", edit_student_path(@student), class: "btn btn-outline-primary" %>
-        <% end %>
+        <div>
+          <% if current_user.dean? || (current_user.student? && current_user.students.include?(@student)) %>
+            <%= link_to generate_pdf_student_path(@student, format: :pdf), class: "btn btn-outline-primary me-2", target: "_blank" do %>
+              <i class="bi bi-file-pdf"></i> Generate PDF
+            <% end %>
+          <% end %>
+          <% if policy(@student).update? %>
+            <%= link_to "Edit", edit_student_path(@student), class: "btn btn-outline-primary" %>
+          <% end %>
+        </div>
       </div>
 
       <div class="row g-3">

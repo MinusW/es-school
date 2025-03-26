@@ -2,26 +2,77 @@
 
 <% content_for :title, "Students" %>
 
-<div class="mx-auto max-w-4xl">
-  <div class="flex justify-between items-center mb-6">
-    <h1 class="text-2xl font-bold">Students</h1>
-    <% if policy(Student).new? %>
-      <%= link_to "New Student", new_student_path, class: "bg-blue-500 hover:bg-blue-700 text-white py-2 px-4 rounded" %>
+<div class="container mt-4">
+  <div class="d-flex justify-content-between align-items-center mb-4">
+    <h1>Students</h1>
+    <% if policy(Student).create? %>
+      <%= link_to new_student_path, class: "btn btn-primary" do %>
+        <i class="bi bi-plus-lg"></i> New Student
+      <% end %>
     <% end %>
   </div>
 
-  <% if @students.any? %>
-    <div class="grid gap-4 md:grid-cols-2">
-      <% @students.each do |student| %>
-        <div class="border border-gray-200 rounded p-4 hover:shadow-md transition-shadow">
-          <%= render student %>
-          <%= link_to "View details", student, class: "text-blue-600 hover:text-blue-800" %>
-        </div>
-      <% end %>
+  <div class="card">
+    <div class="card-body">
+      <div class="table-responsive">
+        <table class="table table-hover">
+          <thead>
+            <tr>
+              <th>Name</th>
+              <th>Email</th>
+              <th>Class</th>
+              <th>Status</th>
+              <th>Actions</th>
+            </tr>
+          </thead>
+          <tbody>
+            <% @students.each do |student| %>
+              <tr>
+                <td><%= student.user.full_name %></td>
+                <td><%= student.user.email %></td>
+                <td><%= student.classroom.name %></td>
+                <td>
+                  <% if student.is_archived %>
+                    <span class="badge bg-secondary">Archived</span>
+                  <% else %>
+                    <span class="badge bg-success">Active</span>
+                  <% end %>
+                </td>
+                <td>
+                  <div class="btn-group">
+                    <%= link_to student_path(student), class: "btn btn-sm btn-outline-primary" do %>
+                      <i class="bi bi-eye"></i>
+                    <% end %>
+                    
+                    <% if policy(student).update? %>
+                      <%= link_to edit_student_path(student), class: "btn btn-sm btn-outline-secondary" do %>
+                        <i class="bi bi-pencil"></i>
+                      <% end %>
+                    <% end %>
+
+                    <% if policy(student).destroy? && !student.is_archived %>
+                      <%= button_to student_path(student), 
+                          method: :delete, 
+                          class: "btn btn-sm btn-outline-danger",
+                          form: { data: { turbo_confirm: "Are you sure you want to archive this student?" } } do %>
+                        <i class="bi bi-archive"></i>
+                      <% end %>
+                    <% end %>
+
+                    <% if policy(student).generate_pdf? %>
+                      <%= link_to generate_pdf_student_path(student, format: :pdf), 
+                          class: "btn btn-sm btn-outline-info", 
+                          target: "_blank" do %>
+                        <i class="bi bi-file-pdf"></i>
+                      <% end %>
+                    <% end %>
+                  </div>
+                </td>
+              </tr>
+            <% end %>
+          </tbody>
+        </table>
+      </div>
     </div>
-  <% else %>
-    <div class="bg-gray-100 p-6 rounded-lg text-center">
-      <p class="text-gray-600">No students found.</p>
-    </div>
-  <% end %>
+  </div>
 </div>

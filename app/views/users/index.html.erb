@@ -2,38 +2,77 @@
 
 <p style="color: green"><%= notice %></p>
 
-<h1>Users</h1>
-
-<div>
-  <%= link_to "New user", new_user_path %>
-</div>
-
-<table>
-  <thead>
-    <tr>
-      <th>Email</th>
-      <th>Roles</th>
-      <th>Address</th>
-      <th>Actions</th>
-    </tr>
-  </thead>
-  <tbody>
-    <% @users.each do |user| %>
-      <tr>
-        <td><%= user.email %></td>
-        <td><%= user.roles.map(&:name).map(&:humanize).join(', ') %></td>
-        <td>
-          <% if user.address %>
-            <%= "#{user.address.city}, #{user.address.street}" %>
-          <% else %>
-            No address
-          <% end %>
-        </td>
-        <td>
-          <%= link_to "Show", user %>
-          <%= link_to "Edit", edit_user_path(user) %>
-        </td>
-      </tr>
+<div class="container mt-4">
+  <div class="d-flex justify-content-between align-items-center mb-4">
+    <h1>Users</h1>
+    <% if policy(User).create? %>
+      <%= link_to new_user_path, class: "btn btn-primary" do %>
+        <i class="bi bi-plus-lg"></i> New User
+      <% end %>
     <% end %>
-  </tbody>
-</table> 
+  </div>
+
+  <div class="card">
+    <div class="card-body">
+      <div class="table-responsive">
+        <table class="table table-hover">
+          <thead>
+            <tr>
+              <th>Name</th>
+              <th>Email</th>
+              <th>Role</th>
+              <th>Status</th>
+              <th>Actions</th>
+            </tr>
+          </thead>
+          <tbody>
+            <% @users.each do |user| %>
+              <tr>
+                <td><%= user.full_name %></td>
+                <td><%= user.email %></td>
+                <td>
+                  <% if user.has_role? :dean %>
+                    <span class="badge bg-primary">Dean</span>
+                  <% elsif user.has_role? :teacher %>
+                    <span class="badge bg-info">Teacher</span>
+                  <% elsif user.has_role? :student %>
+                    <span class="badge bg-success">Student</span>
+                  <% end %>
+                </td>
+                <td>
+                  <% if user.is_archived %>
+                    <span class="badge bg-secondary">Archived</span>
+                  <% else %>
+                    <span class="badge bg-success">Active</span>
+                  <% end %>
+                </td>
+                <td>
+                  <div class="btn-group">
+                    <%= link_to user_path(user), class: "btn btn-sm btn-outline-primary" do %>
+                      <i class="bi bi-eye"></i>
+                    <% end %>
+                    
+                    <% if policy(user).update? %>
+                      <%= link_to edit_user_path(user), class: "btn btn-sm btn-outline-secondary" do %>
+                        <i class="bi bi-pencil"></i>
+                      <% end %>
+                    <% end %>
+
+                    <% if policy(user).destroy? && !user.is_archived %>
+                      <%= button_to user_path(user), 
+                          method: :delete, 
+                          class: "btn btn-sm btn-outline-danger",
+                          form: { data: { turbo_confirm: "Are you sure you want to archive this user?" } } do %>
+                        <i class="bi bi-archive"></i>
+                      <% end %>
+                    <% end %>
+                  </div>
+                </td>
+              </tr>
+            <% end %>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</div> 
