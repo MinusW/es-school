@@ -1,6 +1,6 @@
 Rails.application.routes.draw do
   # Authentication routes
-  devise_for :users
+  devise_for :users, skip: [ :registrations ]
 
   # Root path
   root "home#index"
