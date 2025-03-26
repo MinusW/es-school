@@ -1,17 +1,161 @@
-<div class="mx-auto max-w-2xl">
-  <h1 class="text-2xl font-bold mb-4">Student Details</h1>
+<div class="container mt-4">
+  <% if notice %>
+    <div class="alert alert-success" role="alert">
+      <%= notice %>
+    </div>
+  <% end %>
 
-  <%= render @student %>
+  <div class="card mb-4">
+    <div class="card-body">
+      <div class="d-flex justify-content-between align-items-center mb-3">
+        <h2 class="card-title mb-0"><%= @student.user.full_name %></h2>
+        <% if policy(@student).update? %>
+          <%= link_to "Edit", edit_student_path(@student), class: "btn btn-outline-primary" %>
+        <% end %>
+      </div>
 
-  <div class="flex space-x-2 mt-4">
-    <% if policy(@student).edit? %>
-      <%= link_to "Edit", edit_student_path(@student), class: "bg-blue-500 hover:bg-blue-700 text-white py-2 px-4 rounded" %>
-    <% end %>
-    
-    <%= link_to "Back", students_path, class: "bg-gray-500 hover:bg-gray-700 text-white py-2 px-4 rounded" %>
-    
-    <% if policy(@student).destroy? && !@student.is_archived %>
-      <%= button_to "Archive", @student, method: :delete, class: "bg-red-500 hover:bg-red-700 text-white py-2 px-4 rounded", form: { data: { turbo_confirm: "Are you sure you want to archive this student?" } } %>
-    <% end %>
+      <div class="row g-3">
+        <div class="col-md-4">
+          <p class="mb-1"><strong>Email:</strong></p>
+          <p class="text-muted"><%= @student.user.email %></p>
+        </div>
+        <div class="col-md-4">
+          <p class="mb-1"><strong>Class:</strong></p>
+          <p class="text-muted"><%= @student.classroom.name %></p>
+        </div>
+        <div class="col-md-4">
+          <p class="mb-1"><strong>Status:</strong></p>
+          <p>
+            <% if @student.is_archived %>
+              <span class="badge bg-secondary">Archived</span>
+            <% else %>
+              <span class="badge bg-success">Active</span>
+            <% end %>
+          </p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="row">
+    <div class="col-lg-8">
+      <div class="card mb-4">
+        <div class="card-header d-flex justify-content-between align-items-center">
+          <h3 class="h5 mb-0">Grades by Subject</h3>
+          <small class="text-muted"><%= @student.grades.not_archived.count %> grades total</small>
+        </div>
+        <div class="card-body">
+          <% grades_by_theme = @student.grades.not_archived.includes(:course).group_by { |g| g.course.theme } %>
+          <% grades_by_theme.each do |theme, grades| %>
+            <div class="mb-4">
+              <h4 class="h6 mb-3"><%= theme.module_name %></h4>
+              <div class="table-responsive">
+                <table class="table table-hover">
+                  <thead>
+                    <tr>
+                      <th>Date</th>
+                      <th>Grade</th>
+                      <th>Teacher</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <% grades.sort_by(&:grading_date).reverse.each do |grade| %>
+                      <tr>
+                        <td><%= grade.grading_date.strftime("%b %d, %Y") %></td>
+                        <td>
+                          <span class="badge <%= grade.grade >= 4.0 ? 'bg-success' : 'bg-danger' %>">
+                            <%= grade.grade %>
+                          </span>
+                        </td>
+                        <td><%= grade.teacher.user.full_name %></td>
+                      </tr>
+                    <% end %>
+                    <tr class="table-light">
+                      <td><strong>Average</strong></td>
+                      <td colspan="2">
+                        <% avg = grades.sum(&:grade) / grades.size %>
+                        <strong>
+                          <span class="badge <%= avg >= 4.0 ? 'bg-success' : 'bg-danger' %>">
+                            <%= avg.round(1) %>
+                          </span>
+                        </strong>
+                      </td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          <% end %>
+        </div>
+      </div>
+    </div>
+
+    <div class="col-lg-4">
+      <div class="card mb-4">
+        <div class="card-header">
+          <h3 class="h5 mb-0">Summary</h3>
+        </div>
+        <div class="card-body">
+          <ul class="list-unstyled mb-0">
+            <li class="mb-2 d-flex justify-content-between">
+              <span>Total Grades:</span>
+              <strong><%= @student.grades.not_archived.count %></strong>
+            </li>
+            <li class="mb-2 d-flex justify-content-between">
+              <span>Overall Average:</span>
+              <% all_grades = @student.grades.not_archived %>
+              <% overall_average = all_grades.any? ? (all_grades.sum(&:grade) / all_grades.size).round(1) : nil %>
+              <strong>
+                <span class="badge <%= overall_average && overall_average >= 4.0 ? 'bg-success' : 'bg-danger' %>">
+                  <%= overall_average || 'N/A' %>
+                </span>
+              </strong>
+            </li>
+            <li class="mb-2 d-flex justify-content-between">
+              <span>Subjects:</span>
+              <strong><%= @student.grades.not_archived.includes(:course).map { |g| g.course.theme }.uniq.count %></strong>
+            </li>
+            <li class="d-flex justify-content-between">
+              <span>Latest Grade:</span>
+              <% latest_grade = @student.grades.not_archived.order(grading_date: :desc).first %>
+              <strong>
+                <% if latest_grade %>
+                  <span class="badge <%= latest_grade.grade >= 4.0 ? 'bg-success' : 'bg-danger' %>">
+                    <%= latest_grade.grade %>
+                  </span>
+                  <small class="text-muted ms-1">(<%= latest_grade.grading_date.strftime("%b %d") %>)</small>
+                <% else %>
+                  N/A
+                <% end %>
+              </strong>
+            </li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-header">
+          <h3 class="h5 mb-0">Quick Links</h3>
+        </div>
+        <div class="card-body">
+          <div class="list-group list-group-flush">
+            <%= link_to classroom_path(@student.classroom), class: "list-group-item list-group-item-action d-flex justify-content-between align-items-center" do %>
+              View Class
+              <i class="bi bi-people"></i>
+            <% end %>
+            <%= link_to calendar_classroom_path(@student.classroom), class: "list-group-item list-group-item-action d-flex justify-content-between align-items-center" do %>
+              View Schedule
+              <i class="bi bi-calendar-week"></i>
+            <% end %>
+            <% if policy(@student).update? %>
+              <%= link_to edit_student_path(@student), class: "list-group-item list-group-item-action d-flex justify-content-between align-items-center" do %>
+                Edit Profile
+                <i class="bi bi-pencil"></i>
+              <% end %>
+            <% end %>
+          </div>
+        </div>
+      </div>
+    </div>
   </div>
 </div>

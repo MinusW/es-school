@@ -161,3 +161,25 @@ schedule.each do |course_data|
     is_archived: false
   )
 end
+
+# Create grades for each student in each course
+puts "\nCreating grades..."
+Course.all.each do |course|
+  course.classroom.students.each do |student|
+    # Create 2-3 grades per course for each student
+    rand(2..3).times do
+      Grade.create!(
+        student: student,
+        teacher: course.teacher,
+        course: course,
+        grade: rand(4.0..6.0).round(1),  # Grades between 4.0 and 6.0
+        grading_date: rand(course.quarter.start_date..course.quarter.end_date),
+        is_archived: false
+      )
+    end
+  end
+end
+
+puts "Created #{Grade.count} grades"
+
+puts "Seeding completed!"

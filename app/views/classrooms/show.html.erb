@@ -1,11 +1,165 @@
-<p style="color: green"><%= notice %></p>
+<div class="container mt-4">
+  <% if notice %>
+    <div class="alert alert-success" role="alert">
+      <%= notice %>
+    </div>
+  <% end %>
 
-<%= render @classroom %>
+  <div class="card mb-4">
+    <div class="card-body">
+      <div class="d-flex justify-content-between align-items-center mb-3">
+        <h2 class="card-title mb-0"><%= @classroom.name %></h2>
+        <div>
+          <%= link_to "View Schedule", calendar_classroom_path(@classroom), class: "btn btn-primary me-2" %>
+          <% if policy(@classroom).update? %>
+            <%= link_to "Edit", edit_classroom_path(@classroom), class: "btn btn-outline-primary" %>
+          <% end %>
+        </div>
+      </div>
 
-<div>
-  <%= link_to "View Schedule", calendar_classroom_path(@classroom), class: "btn btn-primary" %>
-  <%= link_to "Edit this classroom", edit_classroom_path(@classroom) %> |
-  <%= link_to "Back to classrooms", classrooms_path %>
+      <div class="row g-3">
+        <div class="col-md-4">
+          <p class="mb-1"><strong>Class Type:</strong></p>
+          <p class="text-muted"><%= @classroom.class_type.name %></p>
+        </div>
+        <div class="col-md-4">
+          <p class="mb-1"><strong>Room:</strong></p>
+          <p class="text-muted"><%= @classroom.room.name %> (Capacity: <%= @classroom.room.capacity %>)</p>
+        </div>
+        <div class="col-md-4">
+          <p class="mb-1"><strong>Quarter:</strong></p>
+          <p class="text-muted">
+            <%= @classroom.quarter.name %>
+            <small>(<%= @classroom.quarter.start_date.strftime("%b %d") %> - <%= @classroom.quarter.end_date.strftime("%b %d, %Y") %>)</small>
+          </p>
+        </div>
+        <div class="col-md-4">
+          <p class="mb-1"><strong>Teacher:</strong></p>
+          <p class="text-muted"><%= @classroom.teacher.user.full_name %></p>
+        </div>
+        <div class="col-md-4">
+          <p class="mb-1"><strong>Status:</strong></p>
+          <p>
+            <% if @classroom.is_archived %>
+              <span class="badge bg-secondary">Archived</span>
+            <% else %>
+              <span class="badge bg-success">Active</span>
+            <% end %>
+          </p>
+        </div>
+      </div>
+    </div>
+  </div>
 
-  <%= button_to "Destroy this classroom", @classroom, method: :delete %>
+  <div class="row">
+    <div class="col-md-8">
+      <div class="card mb-4">
+        <div class="card-header d-flex justify-content-between align-items-center">
+          <h3 class="h5 mb-0">Students</h3>
+          <small class="text-muted"><%= @classroom.students.not_archived.count %> active students</small>
+        </div>
+        <div class="card-body">
+          <div class="table-responsive">
+            <table class="table table-hover">
+              <thead>
+                <tr>
+                  <th>Name</th>
+                  <th>Email</th>
+                  <th>Status</th>
+                  <th></th>
+                </tr>
+              </thead>
+              <tbody>
+                <% @classroom.students.includes(:user).not_archived.each do |student| %>
+                  <tr>
+                    <td><%= student.user.full_name %></td>
+                    <td><%= student.user.email %></td>
+                    <td>
+                      <% if student.state == "active" %>
+                        <span class="badge bg-success">Active</span>
+                      <% else %>
+                        <span class="badge bg-warning">Inactive</span>
+                      <% end %>
+                    </td>
+                    <td class="text-end">
+                      <%= link_to "View", student_path(student), class: "btn btn-sm btn-outline-primary" %>
+                    </td>
+                  </tr>
+                <% end %>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="col-md-4">
+      <div class="card mb-4">
+        <div class="card-header">
+          <h3 class="h5 mb-0">Quick Links</h3>
+        </div>
+        <div class="card-body">
+          <div class="list-group list-group-flush">
+            <%= link_to calendar_classroom_path(@classroom), class: "list-group-item list-group-item-action d-flex justify-content-between align-items-center" do %>
+              View Schedule
+              <i class="bi bi-calendar-week"></i>
+            <% end %>
+            <% if policy(@classroom).update? %>
+              <%= link_to edit_classroom_path(@classroom), class: "list-group-item list-group-item-action d-flex justify-content-between align-items-center" do %>
+                Edit Classroom
+                <i class="bi bi-pencil"></i>
+              <% end %>
+            <% end %>
+            <%= link_to classrooms_path, class: "list-group-item list-group-item-action d-flex justify-content-between align-items-center" do %>
+              All Classrooms
+              <i class="bi bi-grid"></i>
+            <% end %>
+          </div>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-header">
+          <h3 class="h5 mb-0">Statistics</h3>
+        </div>
+        <div class="card-body">
+          <ul class="list-unstyled mb-0">
+            <li class="mb-2 d-flex justify-content-between">
+              <span>Total Students:</span>
+              <strong><%= @classroom.students.not_archived.count %></strong>
+            </li>
+            <li class="mb-2 d-flex justify-content-between">
+              <span>Active Students:</span>
+              <strong><%= @classroom.students.not_archived.where(state: :active).count %></strong>
+            </li>
+            <li class="mb-2 d-flex justify-content-between">
+              <span>Room Capacity:</span>
+              <strong><%= @classroom.room.capacity %></strong>
+            </li>
+            <li class="d-flex justify-content-between">
+              <span>Weekly Classes:</span>
+              <strong><%= @classroom.courses.not_archived.count %></strong>
+            </li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <% if policy(@classroom).destroy? %>
+    <div class="card mt-4 border-danger">
+      <div class="card-header text-danger">
+        <h3 class="h5 mb-0">Danger Zone</h3>
+      </div>
+      <div class="card-body">
+        <div class="d-flex justify-content-between align-items-center">
+          <div>
+            <h5 class="text-danger mb-1">Archive this classroom</h5>
+            <p class="text-muted mb-0">Once archived, the classroom will no longer be active but data will be preserved.</p>
+          </div>
+          <%= button_to "Archive Classroom", @classroom, method: :delete, class: "btn btn-outline-danger", data: { turbo_confirm: "Are you sure you want to archive this classroom?" } %>
+        </div>
+      </div>
+    </div>
+  <% end %>
 </div>
