@@ -2,15 +2,73 @@
 
 <% content_for :title, "Teachers" %>
 
-<h1>Teachers</h1>
+<div class="container mt-4">
+  <div class="d-flex justify-content-between align-items-center mb-4">
+    <h1>Teachers</h1>
+    <% if policy(Teacher).create? %>
+      <%= link_to new_teacher_path, class: "btn btn-primary" do %>
+        <i class="bi bi-plus-lg"></i> New Teacher
+      <% end %>
+    <% end %>
+  </div>
 
-<div id="teachers">
-  <% @teachers.each do |teacher| %>
-    <%= render teacher %>
-    <p>
-      <%= link_to "Show this teacher", teacher %>
-    </p>
-  <% end %>
+  <div class="card">
+    <div class="card-body">
+      <div class="table-responsive">
+        <table class="table table-hover">
+          <thead>
+            <tr>
+              <th>Name</th>
+              <th>Email</th>
+              <th>Status</th>
+              <th>Actions</th>
+            </tr>
+          </thead>
+          <tbody>
+            <% @teachers.each do |teacher| %>
+              <tr>
+                <td><%= teacher.user.full_name %></td>
+                <td><%= teacher.user.email %></td>
+                <td>
+                  <% if teacher.is_archived %>
+                    <span class="badge bg-secondary">Archived</span>
+                  <% else %>
+                    <span class="badge bg-success">Active</span>
+                  <% end %>
+                </td>
+                <td>
+                  <div class="btn-group">
+                    <%= link_to teacher_path(teacher), class: "btn btn-sm btn-outline-primary" do %>
+                      <i class="bi bi-eye"></i>
+                    <% end %>
+                    
+                    <% if policy(teacher).update? %>
+                      <%= link_to edit_teacher_path(teacher), class: "btn btn-sm btn-outline-secondary" do %>
+                        <i class="bi bi-pencil"></i>
+                      <% end %>
+                    <% end %>
+
+                    <% if policy(teacher).destroy? && !teacher.is_archived %>
+                      <%= link_to teacher_path(teacher), 
+                          data: { 
+                            turbo_method: :delete,
+                            turbo_confirm: "Are you sure you want to archive this teacher?"
+                          },
+                          class: "btn btn-sm btn-outline-danger" do %>
+                        <i class="bi bi-archive"></i>
+                      <% end %>
+                    <% end %>
+
+                    <%= link_to calendar_teacher_path(teacher), class: "btn btn-sm btn-outline-info" do %>
+                      <i class="bi bi-calendar-week"></i>
+                    <% end %>
+                  </div>
+                </td>
+              </tr>
+            <% end %>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
 </div>
-
-<%= link_to "New teacher", new_teacher_path %>

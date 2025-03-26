@@ -37,11 +37,6 @@
   </div>
 
   <div>
-    <%= form.label :user_id, "User", style: "display: block" %>
-    <%= form.collection_select :user_id, User.all, :id, :email, { include_blank: "-- Select User --" } %>
-  </div>
-
-  <div>
     <%= form.submit %>
   </div>
 <% end %>

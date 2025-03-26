@@ -29,11 +29,22 @@ class StudentsController < ApplicationController
     @student = Student.new(student_params)
     authorize @student
 
+    # Create new user
+    user = User.new(
+      first_name: params[:student][:first_name],
+      last_name: params[:student][:last_name],
+      email: params[:student][:email],
+      phone: params[:student][:phone],
+      password: params[:student][:password],
+      password_confirmation: params[:student][:password_confirmation],
+      address_id: params[:student][:user][:address_id]
+    )
+    user.add_role(:student)
+    user.save!
+    @student.user = user
+
     respond_to do |format|
       if @student.save
-        # If creating a student, assign the student role to the user
-        @student.user.add_role(:student) unless @student.user.has_role?(:student)
-
         format.html { redirect_to student_url(@student), notice: "Student was successfully created." }
         format.json { render :show, status: :created, location: @student }
       else
@@ -61,12 +72,10 @@ class StudentsController < ApplicationController
   # DELETE /students/1 or /students/1.json
   def destroy
     authorize @student
-
-    # Soft delete - just mark as archived instead of destroying
-    @student.update(is_archived: true)
+    @student.destroy!
 
     respond_to do |format|
-      format.html { redirect_to students_url, notice: "Student was successfully archived." }
+      format.html { redirect_to students_url, notice: "Student was successfully destroyed." }
       format.json { head :no_content }
     end
   end
@@ -92,7 +101,7 @@ class StudentsController < ApplicationController
 
     # Only allow a list of trusted parameters through.
     def student_params
-      params.require(:student).permit(:user_id, :classroom_id, :state, :is_archived)
+      params.require(:student).permit(:classroom_id, :state)
     end
 
     def authorize_student

@@ -1,5 +1,6 @@
 class TeachersController < ApplicationController
-  before_action :set_teacher, only: %i[ show edit update destroy calendar ]
+  before_action :set_teacher, only: %i[ show edit update destroy ]
+  before_action :authenticate_user!
 
   # GET /teachers or /teachers.json
   def index
@@ -26,6 +27,19 @@ class TeachersController < ApplicationController
   def create
     @teacher = Teacher.new(teacher_params)
     authorize @teacher
+
+    # Create new user
+    user = User.new(
+      first_name: params[:teacher][:first_name],
+      last_name: params[:teacher][:last_name],
+      email: params[:teacher][:email],
+      phone: params[:teacher][:phone],
+      password: params[:teacher][:password],
+      password_confirmation: params[:teacher][:password_confirmation]
+    )
+    user.add_role(:teacher)
+    user.save!
+    @teacher.user = user
 
     respond_to do |format|
       if @teacher.save
@@ -56,12 +70,10 @@ class TeachersController < ApplicationController
   # DELETE /teachers/1 or /teachers/1.json
   def destroy
     authorize @teacher
-
-    # Soft delete by marking as archived
-    @teacher.update(is_archived: true)
+    @teacher.destroy!
 
     respond_to do |format|
-      format.html { redirect_to teachers_url, notice: "Teacher was successfully archived." }
+      format.html { redirect_to teachers_url, notice: "Teacher was successfully destroyed." }
       format.json { head :no_content }
     end
   end
@@ -79,6 +91,6 @@ class TeachersController < ApplicationController
 
     # Only allow a list of trusted parameters through.
     def teacher_params
-      params.require(:teacher).permit(:IBAN, :state, :is_dean, :is_archived, :user_id)
+      params.require(:teacher).permit(:address_id)
     end
 end
