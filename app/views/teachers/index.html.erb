@@ -20,6 +20,7 @@
             <tr>
               <th>Name</th>
               <th>Email</th>
+              <th>Phone</th>
               <th>Status</th>
               <th>Actions</th>
             </tr>
@@ -29,6 +30,7 @@
               <tr>
                 <td><%= teacher.user.full_name %></td>
                 <td><%= teacher.user.email %></td>
+                <td><%= teacher.user.phone %></td>
                 <td>
                   <% if teacher.is_archived %>
                     <span class="badge bg-secondary">Archived</span>
@@ -37,29 +39,27 @@
                   <% end %>
                 </td>
                 <td>
-                  <div class="btn-group">
-                    <%= link_to teacher_path(teacher), class: "btn btn-sm btn-outline-primary" do %>
+                  <div class="d-flex gap-2">
+                    <%= link_to teacher_path(teacher), class: "btn btn-outline-primary btn-sm" do %>
                       <i class="bi bi-eye"></i>
                     <% end %>
                     
                     <% if policy(teacher).update? %>
-                      <%= link_to edit_teacher_path(teacher), class: "btn btn-sm btn-outline-secondary" do %>
+                      <%= link_to edit_teacher_path(teacher), class: "btn btn-outline-secondary btn-sm" do %>
                         <i class="bi bi-pencil"></i>
                       <% end %>
                     <% end %>
 
                     <% if policy(teacher).destroy? && !teacher.is_archived %>
-                      <%= link_to teacher_path(teacher), 
-                          data: { 
-                            turbo_method: :delete,
-                            turbo_confirm: "Are you sure you want to archive this teacher?"
-                          },
-                          class: "btn btn-sm btn-outline-danger" do %>
+                      <%= button_to teacher_path(teacher), 
+                          method: :delete, 
+                          class: "btn btn-outline-danger btn-sm",
+                          form: { data: { turbo_confirm: "Are you sure you want to archive this teacher?" } } do %>
                         <i class="bi bi-archive"></i>
                       <% end %>
                     <% end %>
 
-                    <%= link_to calendar_teacher_path(teacher), class: "btn btn-sm btn-outline-info" do %>
+                    <%= link_to calendar_teacher_path(teacher), class: "btn btn-outline-info btn-sm" do %>
                       <i class="bi bi-calendar-week"></i>
                     <% end %>
                   </div>

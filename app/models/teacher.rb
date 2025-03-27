@@ -14,6 +14,28 @@ class Teacher < ApplicationRecord
   has_many :courses
   has_many :grades
 
+  def archive!
+    ActiveRecord::Base.transaction do
+      # First archive all grades
+      grades.not_archived.each do |grade|
+        grade.update!(is_archived: true)
+      end
+
+      # Then archive all courses
+      courses.not_archived.each do |course|
+        course.update!(is_archived: true)
+      end
+
+      # Then archive all classrooms
+      classrooms.not_archived.each do |classroom|
+        classroom.update!(is_archived: true)
+      end
+      
+      # Finally archive the teacher
+      update!(is_archived: true)
+    end
+  end
+
   private
 
   def assign_teacher_role

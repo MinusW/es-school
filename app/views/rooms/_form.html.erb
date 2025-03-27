@@ -1,9 +1,8 @@
-<%= form_with(model: room) do |form| %>
+<%= form_with(model: room, class: "needs-validation", data: { turbo: false }) do |form| %>
   <% if room.errors.any? %>
-    <div style="color: red">
-      <h2><%= pluralize(room.errors.count, "error") %> prohibited this room from being saved:</h2>
-
-      <ul>
+    <div class="alert alert-danger">
+      <h4 class="alert-heading"><%= pluralize(room.errors.count, "error") %> prohibited this room from being saved:</h4>
+      <ul class="mb-0">
         <% room.errors.each do |error| %>
           <li><%= error.full_message %></li>
         <% end %>
@@ -11,32 +10,49 @@
     </div>
   <% end %>
 
-  <div>
-    <%= form.label :name, style: "display: block" %>
-    <%= form.text_field :name %>
-  </div>
+  <div class="row g-3">
+    <div class="col-md-6">
+      <div class="form-floating">
+        <%= form.text_field :name, class: "form-control", placeholder: "Room Name" %>
+        <%= form.label :name, "Room Name" %>
+      </div>
+    </div>
 
-  <div>
-    <%= form.label :building, style: "display: block" %>
-    <%= form.text_field :building %>
-  </div>
+    <div class="col-md-6">
+      <div class="form-floating">
+        <%= form.text_field :building, class: "form-control", placeholder: "Building" %>
+        <%= form.label :building, "Building" %>
+      </div>
+    </div>
 
-  <div>
-    <%= form.label :floor, style: "display: block" %>
-    <%= form.number_field :floor %>
-  </div>
+    <div class="col-md-6">
+      <div class="form-floating">
+        <%= form.number_field :floor, class: "form-control", placeholder: "Floor" %>
+        <%= form.label :floor, "Floor" %>
+      </div>
+    </div>
 
-  <div>
-    <%= form.label :capacity, style: "display: block" %>
-    <%= form.number_field :capacity %>
-  </div>
+    <div class="col-md-6">
+      <div class="form-floating">
+        <%= form.number_field :capacity, class: "form-control", placeholder: "Capacity" %>
+        <%= form.label :capacity, "Capacity" %>
+      </div>
+    </div>
 
-  <div>
-    <%= form.label :is_archived, style: "display: block" %>
-    <%= form.checkbox :is_archived %>
-  </div>
+    <div class="col-md-6">
+      <div class="form-check form-switch">
+        <%= form.check_box :is_archived, class: "form-check-input" %>
+        <%= form.label :is_archived, "Archive Room", class: "form-check-label" %>
+      </div>
+    </div>
 
-  <div>
-    <%= form.submit %>
+    <div class="col-12">
+      <div class="d-flex gap-2">
+        <%= form.submit class: "btn btn-primary" do %>
+          <i class="bi bi-save"></i> Save Room
+        <% end %>
+        <%= link_to "Cancel", rooms_path, class: "btn btn-outline-secondary" %>
+      </div>
+    </div>
   </div>
 <% end %>

@@ -1,9 +1,8 @@
-<%= form_with(model: classroom) do |form| %>
+<%= form_with(model: classroom, class: "needs-validation", data: { turbo: false }) do |form| %>
   <% if classroom.errors.any? %>
-    <div style="color: red">
-      <h2><%= pluralize(classroom.errors.count, "error") %> prohibited this classroom from being saved:</h2>
-
-      <ul>
+    <div class="alert alert-danger">
+      <h4 class="alert-heading"><%= pluralize(classroom.errors.count, "error") %> prohibited this classroom from being saved:</h4>
+      <ul class="mb-0">
         <% classroom.errors.each do |error| %>
           <li><%= error.full_message %></li>
         <% end %>
@@ -11,37 +10,76 @@
     </div>
   <% end %>
 
-  <div>
-    <%= form.label :name, style: "display: block" %>
-    <%= form.text_field :name %>
-  </div>
+  <div class="row g-3">
+    <div class="col-md-6">
+      <div class="form-floating">
+        <%= form.text_field :name, class: "form-control", placeholder: "Classroom Name" %>
+        <%= form.label :name, "Classroom Name" %>
+      </div>
+    </div>
 
-  <div>
-    <%= form.label :class_type_id, "Class Type", style: "display: block" %>
-    <%= form.collection_select :class_type_id, ClassType.not_archived, :id, :name, { include_blank: "-- Select Class Type --" } %>
-  </div>
+    <div class="col-md-6">
+      <div class="form-floating">
+        <%= form.collection_select :class_type_id, 
+            ClassType.not_archived, 
+            :id, 
+            :name, 
+            { include_blank: "-- Select Class Type --" },
+            { class: "form-select" } %>
+        <%= form.label :class_type_id, "Class Type" %>
+      </div>
+    </div>
 
-  <div>
-    <%= form.label :room_id, "Room", style: "display: block" %>
-    <%= form.collection_select :room_id, Room.not_archived, :id, :name, { include_blank: "-- Select Room --" } %>
-  </div>
+    <div class="col-md-6">
+      <div class="form-floating">
+        <%= form.collection_select :room_id, 
+            Room.not_archived, 
+            :id, 
+            :name, 
+            { include_blank: "-- Select Room --" },
+            { class: "form-select" } %>
+        <%= form.label :room_id, "Room" %>
+      </div>
+    </div>
 
-  <div>
-    <%= form.label :teacher_id, "Teacher", style: "display: block" %>
-    <%= form.collection_select :teacher_id, User.with_role(:teacher), :id, :email, { include_blank: "-- Select Teacher --" } %>
-  </div>
+    <div class="col-md-6">
+      <div class="form-floating">
+        <%= form.collection_select :teacher_id, 
+            Teacher.not_archived, 
+            :id, 
+            ->(t) { t.user.full_name }, 
+            { include_blank: "-- Select Teacher --" },
+            { class: "form-select" } %>
+        <%= form.label :teacher_id, "Teacher" %>
+      </div>
+    </div>
 
-  <div>
-    <%= form.label :quarter_id, "Quarter", style: "display: block" %>
-    <%= form.collection_select :quarter_id, Quarter.not_archived, :id, :name, { include_blank: "-- No Quarter --" }, { required: false } %>
-  </div>
+    <div class="col-md-6">
+      <div class="form-floating">
+        <%= form.collection_select :quarter_id, 
+            Quarter.not_archived, 
+            :id, 
+            :name, 
+            { include_blank: "-- No Quarter --" },
+            { class: "form-select", required: false } %>
+        <%= form.label :quarter_id, "Quarter" %>
+      </div>
+    </div>
 
-  <div>
-    <%= form.label :is_archived, style: "display: block" %>
-    <%= form.check_box :is_archived %>
-  </div>
+    <div class="col-md-6">
+      <div class="form-check form-switch">
+        <%= form.check_box :is_archived, class: "form-check-input" %>
+        <%= form.label :is_archived, "Archive Classroom", class: "form-check-label" %>
+      </div>
+    </div>
 
-  <div>
-    <%= form.submit %>
+    <div class="col-12">
+      <div class="d-flex gap-2">
+        <%= form.submit class: "btn btn-primary" do %>
+          <i class="bi bi-save"></i> Save Classroom
+        <% end %>
+        <%= link_to "Cancel", classrooms_path, class: "btn btn-outline-secondary" %>
+      </div>
+    </div>
   </div>
 <% end %>

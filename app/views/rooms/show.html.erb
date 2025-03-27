@@ -1,10 +1,109 @@
-<p style="color: green"><%= notice %></p>
+<% content_for :title, @room.name %>
 
-<%= render @room %>
+<div class="container mt-4">
+  <div class="row justify-content-center">
+    <div class="col-md-8">
+      <div class="card">
+        <div class="card-header bg-white">
+          <div class="d-flex justify-content-between align-items-center">
+            <h1 class="h3 mb-0"><%= @room.name %></h1>
+            <% if @room.is_archived %>
+              <span class="badge bg-secondary">Archived</span>
+            <% else %>
+              <span class="badge bg-success">Active</span>
+            <% end %>
+          </div>
+        </div>
+        <div class="card-body">
+          <div class="row g-3">
+            <div class="col-md-6">
+              <div class="p-3 border rounded">
+                <h6 class="text-muted mb-2">Building</h6>
+                <p class="mb-0">
+                  <i class="bi bi-building text-primary"></i>
+                  <%= @room.building %>
+                </p>
+              </div>
+            </div>
 
-<div>
-  <%= link_to "Edit this room", edit_room_path(@room) %> |
-  <%= link_to "Back to rooms", rooms_path %>
+            <div class="col-md-6">
+              <div class="p-3 border rounded">
+                <h6 class="text-muted mb-2">Floor</h6>
+                <p class="mb-0">
+                  <i class="bi bi-layers text-primary"></i>
+                  Floor <%= @room.floor %>
+                </p>
+              </div>
+            </div>
 
-  <%= button_to "Destroy this room", @room, method: :delete %>
+            <div class="col-md-6">
+              <div class="p-3 border rounded">
+                <h6 class="text-muted mb-2">Capacity</h6>
+                <p class="mb-0">
+                  <i class="bi bi-people text-primary"></i>
+                  <%= @room.capacity %> people
+                </p>
+              </div>
+            </div>
+
+            <div class="col-md-6">
+              <div class="p-3 border rounded">
+                <h6 class="text-muted mb-2">Status</h6>
+                <p class="mb-0">
+                  <i class="bi bi-info-circle text-primary"></i>
+                  <%= @room.is_archived ? "Archived" : "Active" %>
+                </p>
+              </div>
+            </div>
+          </div>
+
+          <div class="mt-4">
+            <h5 class="mb-3">Current Classes</h5>
+            <% if @room.classrooms.not_archived.any? %>
+              <div class="list-group">
+                <% @room.classrooms.not_archived.each do |classroom| %>
+                  <%= link_to classroom_path(classroom), class: "list-group-item list-group-item-action" do %>
+                    <div class="d-flex w-100 justify-content-between">
+                      <h6 class="mb-1"><%= classroom.name %></h6>
+                      <small class="text-muted">
+                        <%= pluralize(classroom.students.not_archived.count, 'student') %>
+                      </small>
+                    </div>
+                    <p class="mb-1">
+                      <i class="bi bi-person text-primary"></i>
+                      <%= classroom.teacher&.user&.full_name || "No teacher assigned" %>
+                    </p>
+                  <% end %>
+                <% end %>
+              </div>
+            <% else %>
+              <p class="text-muted">No active classes in this room.</p>
+            <% end %>
+          </div>
+        </div>
+        <div class="card-footer bg-white">
+          <div class="d-flex gap-2">
+            <% if policy(@room).update? %>
+              <%= link_to edit_room_path(@room), class: "btn btn-outline-primary" do %>
+                <i class="bi bi-pencil"></i> Edit Room
+              <% end %>
+            <% end %>
+
+            <% if policy(@room).destroy? && !@room.is_archived %>
+              <%= button_to room_path(@room), 
+                  method: :delete, 
+                  class: "btn btn-outline-danger",
+                  form: { data: { turbo_confirm: "Are you sure you want to archive this room?" } } do %>
+                <i class="bi bi-archive"></i> Archive Room
+              <% end %>
+            <% end %>
+
+            <%= link_to rooms_path, class: "btn btn-outline-secondary" do %>
+              <i class="bi bi-arrow-left"></i> Back to Rooms
+            <% end %>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
 </div>

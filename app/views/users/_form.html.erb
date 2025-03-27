@@ -1,9 +1,8 @@
-<%= form_with(model: user) do |form| %>
+<%= form_with(model: user, class: "needs-validation", data: { turbo: false }) do |form| %>
   <% if user.errors.any? %>
-    <div style="color: red">
-      <h2><%= pluralize(user.errors.count, "error") %> prohibited this user from being saved:</h2>
-
-      <ul>
+    <div class="alert alert-danger">
+      <h4 class="alert-heading"><%= pluralize(user.errors.count, "error") %> prohibited this user from being saved:</h4>
+      <ul class="mb-0">
         <% user.errors.each do |error| %>
           <li><%= error.full_message %></li>
         <% end %>
@@ -11,42 +10,113 @@
     </div>
   <% end %>
 
-  <div>
-    <%= form.label :email, style: "display: block" %>
-    <%= form.email_field :email %>
-  </div>
+  <div class="row g-3">
+    <div class="col-md-6">
+      <div class="form-floating">
+        <%= form.text_field :first_name, class: "form-control", placeholder: "First Name" %>
+        <%= form.label :first_name %>
+      </div>
+    </div>
 
-  <div>
-    <%= form.label :phone, style: "display: block" %>
-    <%= form.telephone_field :phone %>
-  </div>
+    <div class="col-md-6">
+      <div class="form-floating">
+        <%= form.text_field :last_name, class: "form-control", placeholder: "Last Name" %>
+        <%= form.label :last_name %>
+      </div>
+    </div>
 
-  <div>
-    <%= form.label :password, style: "display: block" %>
-    <%= form.password_field :password %>
-  </div>
+    <div class="col-md-6">
+      <div class="form-floating">
+        <%= form.email_field :email, class: "form-control", placeholder: "Email" %>
+        <%= form.label :email %>
+      </div>
+    </div>
 
-  <div>
-    <%= form.label :password_confirmation, style: "display: block" %>
-    <%= form.password_field :password_confirmation %>
-  </div>
+    <div class="col-md-6">
+      <div class="form-floating">
+        <%= form.telephone_field :phone, class: "form-control", placeholder: "Phone" %>
+        <%= form.label :phone %>
+      </div>
+    </div>
 
-  <div>
-    <%= form.label :address_id, "Address", style: "display: block" %>
-    <%= form.collection_select :address_id, Address.all, :id, :city, { include_blank: "-- Select Address --" } %>
-  </div>
+    <% if user.new_record? %>
+      <div class="col-md-6">
+        <div class="form-floating">
+          <%= form.password_field :password, class: "form-control", placeholder: "Password" %>
+          <%= form.label :password %>
+        </div>
+      </div>
 
-  <div>
-    <h3>Roles</h3>
-    <% Role.all.each do |role| %>
-      <div>
-        <%= check_box_tag "user[role_ids][]", role.id, user.has_role?(role.name), id: dom_id(role) %>
-        <%= label_tag dom_id(role), role.name.humanize %>
+      <div class="col-md-6">
+        <div class="form-floating">
+          <%= form.password_field :password_confirmation, class: "form-control", placeholder: "Password Confirmation" %>
+          <%= form.label :password_confirmation %>
+        </div>
+      </div>
+    <% else %>
+      <div class="col-12">
+        <div class="form-check form-switch mb-3">
+          <%= check_box_tag :change_password, "1", false, class: "form-check-input", id: "change_password" %>
+          <label class="form-check-label" for="change_password">Change Password</label>
+        </div>
+
+        <div id="password_fields" class="row g-3" style="display: none;">
+          <div class="col-md-6">
+            <div class="form-floating">
+              <%= form.password_field :password, class: "form-control", placeholder: "New Password" %>
+              <%= form.label :password, "New Password" %>
+            </div>
+          </div>
+
+          <div class="col-md-6">
+            <div class="form-floating">
+              <%= form.password_field :password_confirmation, class: "form-control", placeholder: "Confirm New Password" %>
+              <%= form.label :password_confirmation, "Confirm New Password" %>
+            </div>
+          </div>
+        </div>
+      </div>
+    <% end %>
+
+    <div class="col-md-6">
+      <div class="form-floating">
+        <%= form.collection_select :address_id, Address.all, :id, :full_address, { include_blank: "Select an address" }, class: "form-select" %>
+        <%= form.label :address_id, "Address" %>
+      </div>
+    </div>
+
+    <div class="col-md-6">
+      <div class="form-floating">
+        <%= form.collection_select :role_id, Role.all, :id, :name, { include_blank: "Select a role" }, class: "form-select" %>
+        <%= form.label :role_id, "Role" %>
+      </div>
+    </div>
+
+    <% if policy(user).destroy? %>
+      <div class="col-12">
+        <div class="form-check form-switch">
+          <%= form.check_box :is_archived, class: "form-check-input" %>
+          <label class="form-check-label" for="user_is_archived">Archive User</label>
+        </div>
       </div>
     <% end %>
   </div>
 
-  <div>
-    <%= form.submit %>
+  <div class="mt-4">
+    <%= form.submit class: "btn btn-primary" %>
+    <%= link_to "Cancel", users_path, class: "btn btn-outline-secondary" %>
   </div>
-<% end %> 
+<% end %>
+
+<script>
+  document.addEventListener('DOMContentLoaded', function() {
+    const changePasswordCheckbox = document.getElementById('change_password');
+    const passwordFields = document.getElementById('password_fields');
+
+    if (changePasswordCheckbox && passwordFields) {
+      changePasswordCheckbox.addEventListener('change', function() {
+        passwordFields.style.display = this.checked ? 'flex' : 'none';
+      });
+    }
+  });
+</script> 

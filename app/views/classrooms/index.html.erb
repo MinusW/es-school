@@ -2,15 +2,72 @@
 
 <% content_for :title, "Classrooms" %>
 
-<h1>Classrooms</h1>
+<div class="container mt-4">
+  <div class="d-flex justify-content-between align-items-center mb-4">
+    <h1>Classrooms</h1>
+    <% if policy(Classroom).create? %>
+      <%= link_to new_classroom_path, class: "btn btn-primary" do %>
+        <i class="bi bi-plus-lg"></i> New Classroom
+      <% end %>
+    <% end %>
+  </div>
 
-<div id="classrooms">
-  <% @classrooms.each do |classroom| %>
-    <%= render classroom %>
-    <p>
-      <%= link_to "Show this classroom", classroom %>
-    </p>
-  <% end %>
+  <div class="card">
+    <div class="card-body">
+      <div class="table-responsive">
+        <table class="table table-hover">
+          <thead>
+            <tr>
+              <th>Name</th>
+              <th>Class Type</th>
+              <th>Room</th>
+              <th>Teacher</th>
+              <th>Status</th>
+              <th>Actions</th>
+            </tr>
+          </thead>
+          <tbody>
+            <% @classrooms.each do |classroom| %>
+              <tr>
+                <td><%= classroom.name %></td>
+                <td><%= classroom.class_type.name %></td>
+                <td><%= classroom.room.name %></td>
+                <td><%= classroom.teacher.user.full_name %></td>
+                <td>
+                  <% if classroom.is_archived %>
+                    <span class="badge bg-secondary">Archived</span>
+                  <% else %>
+                    <span class="badge bg-success">Active</span>
+                  <% end %>
+                </td>
+                <td>
+                  <div class="d-flex gap-2">
+                    <%= link_to classroom_path(classroom), class: "btn btn-outline-primary btn-sm" do %>
+                      <i class="bi bi-eye"></i>
+                    <% end %>
+                    
+                    <% if policy(classroom).update? %>
+                      <%= link_to edit_classroom_path(classroom), class: "btn btn-outline-secondary btn-sm" do %>
+                        <i class="bi bi-pencil"></i>
+                      <% end %>
+                    <% end %>
+
+                    <% if policy(classroom).destroy? && !classroom.is_archived %>
+                      <%= button_to classroom_path(classroom), 
+                          method: :delete, 
+                          class: "btn btn-outline-danger btn-sm",
+                          form: { data: { turbo_confirm: "Are you sure you want to archive this classroom?" } } do %>
+                        <i class="bi bi-archive"></i>
+                      <% end %>
+                    <% end %>
+                  </div>
+                </td>
+              </tr>
+            <% end %>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
 </div>
 
-<%= link_to "New classroom", new_classroom_path %>

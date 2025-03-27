@@ -16,6 +16,10 @@ class User < ApplicationRecord
   validates :first_name, presence: true
   validates :last_name, presence: true
 
+  attr_accessor :role_id
+
+  before_save :assign_role
+
   def full_name
     "#{first_name} #{last_name}"
   end
@@ -30,5 +34,18 @@ class User < ApplicationRecord
 
   def student?
     has_role?(:student)
+  end
+
+  private
+
+  def assign_role
+    return if role_id.blank?
+
+    # Remove all existing roles
+    roles.clear
+
+    # Add the new role
+    role = Role.find(role_id)
+    add_role(role.name)
   end
 end

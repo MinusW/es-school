@@ -1,10 +1,13 @@
 class StudentPolicy < ApplicationPolicy
   def index?
-    user.dean?
+    user.dean? || user.student? || user.teacher?
   end
 
   def show?
-    user.dean? || (user.student? && user.students.include?(record))
+    user.dean? ||
+    user.teacher? ||
+    user.student? && user.students.include?(record)
+    
   end
 
   def create?
@@ -20,15 +23,17 @@ class StudentPolicy < ApplicationPolicy
   end
 
   def generate_pdf?
-    user.dean? || (user.student? && user.students.include?(record))
+    user.dean? || 
+    (user.student? && user.students.include?(record)) ||
+    (user.teacher? && user.teachers.first.courses.any? { |course| course.classroom_id == record.classroom_id })
   end
 
   class Scope < Scope
     def resolve
-      if user.dean?
+      if user.dean? || user.teacher?
         scope.all
       elsif user.student?
-        scope.where(user: user)
+        scope.all
       else
         scope.none
       end

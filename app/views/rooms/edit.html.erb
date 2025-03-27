@@ -1,8 +1,19 @@
-<% content_for :title, "Editing room" %>
+<% content_for :title, "Edit Room" %>
 
-<h1>Editing room</h1>
-
-<%= render "form", room: @room %>
+<div class="container mt-4">
+  <div class="row justify-content-center">
+    <div class="col-md-8">
+      <div class="card">
+        <div class="card-header bg-white">
+          <h1 class="h3 mb-0">Edit Room</h1>
+        </div>
+        <div class="card-body">
+          <%= render "form", room: @room %>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
 
 <br>
 

@@ -47,6 +47,9 @@
                 <li class="nav-item">
                   <%= link_to "My Calendar", calendar_teacher_path(current_user.teacher), class: "nav-link" %>
                 </li>
+                <li class="nav-item">
+                  <%= link_to "Students", students_path, class: "nav-link" %>
+                </li>
               <% end %>
               
               <% if current_user.student? %>
@@ -59,6 +62,9 @@
                   </li>
                   <li class="nav-item">
                     <%= link_to "My Grades", student_path(current_user.students.first), class: "nav-link" %>
+                  </li>
+                  <li class="nav-item">
+                    <%= link_to "Teachers", teachers_path, class: "nav-link" %>
                   </li>
                 <% end %>
               <% end %>

@@ -37,10 +37,24 @@ class UsersController < ApplicationController
   def update
     @user = User.find(params[:id])
     authorize @user
-    if @user.update(user_params)
-      redirect_to @user, notice: "User updated successfully."
+
+    # Only update password if change_password is checked
+    if params[:change_password] == "1"
+      if @user.update(user_params)
+        redirect_to @user, notice: "User updated successfully."
+      else
+        render :edit
+      end
     else
-      render :edit
+      # Remove password fields from params if not changing password
+      params[:user].delete(:password)
+      params[:user].delete(:password_confirmation)
+      
+      if @user.update(user_params)
+        redirect_to @user, notice: "User updated successfully."
+      else
+        render :edit
+      end
     end
   end
 
@@ -58,6 +72,6 @@ class UsersController < ApplicationController
   end
 
   def user_params
-    params.require(:user).permit(:email, :password, :password_confirmation, :first_name, :last_name, :is_archived, :phone)
+    params.require(:user).permit(:email, :password, :password_confirmation, :first_name, :last_name, :is_archived, :phone, :address_id, :role_id)
   end
 end

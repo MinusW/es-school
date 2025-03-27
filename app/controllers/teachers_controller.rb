@@ -1,5 +1,5 @@
 class TeachersController < ApplicationController
-  before_action :set_teacher, only: %i[ show edit update destroy ]
+  before_action :set_teacher, only: %i[ show edit update destroy calendar ]
   before_action :authenticate_user!
 
   # GET /teachers or /teachers.json
@@ -70,10 +70,16 @@ class TeachersController < ApplicationController
   # DELETE /teachers/1 or /teachers/1.json
   def destroy
     authorize @teacher
-    @teacher.destroy!
+    if @teacher.is_archived
+      @teacher.update(is_archived: false)
+      message = "Teacher was successfully unarchived."
+    else
+      @teacher.update(is_archived: true)
+      message = "Teacher was successfully archived."
+    end
 
     respond_to do |format|
-      format.html { redirect_to teachers_url, notice: "Teacher was successfully destroyed." }
+      format.html { redirect_to teachers_url, notice: message }
       format.json { head :no_content }
     end
   end
@@ -91,6 +97,6 @@ class TeachersController < ApplicationController
 
     # Only allow a list of trusted parameters through.
     def teacher_params
-      params.require(:teacher).permit(:address_id)
+      params.require(:teacher).permit(:user_id, :IBAN, :state, :is_dean, :is_archived)
     end
 end

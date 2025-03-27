@@ -30,7 +30,8 @@ class ClassroomPolicy < ApplicationPolicy
         scope.all
       elsif user.teacher?
         # Teachers can see classrooms they teach
-        scope.where(teacher_id: user.id).or(scope.where(id: user.classrooms.pluck(:id)))
+        teacher = user.teacher
+        scope.where(teacher_id: teacher.id)
       elsif user.student?
         # Students can see classrooms they're enrolled in
         scope.where(id: user.classrooms.pluck(:id))

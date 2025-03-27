@@ -1,7 +1,6 @@
 class StudentsController < ApplicationController
   before_action :set_student, only: %i[ show edit update destroy generate_pdf ]
   before_action :authenticate_user!
-  before_action :authorize_student, only: [ :show, :generate_pdf ]
 
   # GET /students or /students.json
   def index
@@ -96,18 +95,15 @@ class StudentsController < ApplicationController
   private
     # Use callbacks to share common setup or constraints between actions.
     def set_student
-      @student = Student.find(params[:id])
+      @student = Student.find_by(id: params[:id])
+      unless @student
+        flash[:alert] = "Student not found."
+        redirect_to students_path
+      end
     end
 
     # Only allow a list of trusted parameters through.
     def student_params
       params.require(:student).permit(:classroom_id, :state)
-    end
-
-    def authorize_student
-      unless current_user.dean? || (current_user.student? && current_user.students.include?(@student))
-        flash[:alert] = "You are not authorized to view this student's grades."
-        redirect_to root_path
-      end
     end
 end

@@ -1,9 +1,8 @@
-<%= form_with(model: teacher) do |form| %>
+<%= form_with(model: teacher, class: "needs-validation", data: { turbo: false }) do |form| %>
   <% if teacher.errors.any? %>
-    <div style="color: red">
-      <h2><%= pluralize(teacher.errors.count, "error") %> prohibited this teacher from being saved:</h2>
-
-      <ul>
+    <div class="alert alert-danger">
+      <h4 class="alert-heading"><%= pluralize(teacher.errors.count, "error") %> prohibited this teacher from being saved:</h4>
+      <ul class="mb-0">
         <% teacher.errors.each do |error| %>
           <li><%= error.full_message %></li>
         <% end %>
@@ -11,32 +10,61 @@
     </div>
   <% end %>
 
-  <div>
-    <%= form.label :IBAN, style: "display: block" %>
-    <%= form.text_field :IBAN %>
-  </div>
+  <div class="row g-3">
+    <div class="col-md-6">
+      <div class="form-floating">
+        <%= form.text_field :IBAN, class: "form-control", placeholder: "IBAN" %>
+        <%= form.label :IBAN, "IBAN" %>
+      </div>
+    </div>
 
-  <div>
-    <%= form.label :state, style: "display: block" %>
-    <%= form.number_field :state %>
-  </div>
+    <div class="col-md-6">
+      <div class="form-floating">
+        <%= form.select :state, 
+            Teacher.states.keys.map { |state| [state.titleize, state] },
+            { prompt: "Select state" },
+            { class: "form-select" } %>
+        <%= form.label :state, "State" %>
+      </div>
+    </div>
 
-  <div>
-    <%= form.label :is_dean, style: "display: block" %>
-    <%= form.checkbox :is_dean %>
-  </div>
+    <div class="col-md-6">
+      <div class="form-check form-switch">
+        <%= form.check_box :is_dean, class: "form-check-input" %>
+        <%= form.label :is_dean, "Is Dean", class: "form-check-label" %>
+      </div>
+    </div>
 
-  <div>
-    <%= form.label :is_archived, style: "display: block" %>
-    <%= form.checkbox :is_archived %>
-  </div>
+    <% if teacher.persisted? %>
+      <div class="col-md-6">
+        <div class="form-check form-switch">
+          <%= form.check_box :is_archived, class: "form-check-input" %>
+          <%= form.label :is_archived, "Archive Teacher", class: "form-check-label" %>
+        </div>
+      </div>
+    <% end %>
 
-  <div>
-    <%= form.label :user_id, style: "display: block" %>
-    <%= form.text_field :user_id %>
-  </div>
+    <% unless teacher.persisted? %>
+      <div class="col-md-6">
+        <div class="form-floating">
+          <%= form.collection_select :user_id, 
+              User.with_role(:teacher).not_archived, 
+              :id, 
+              :full_name, 
+              { prompt: "Select teacher" },
+              { class: "form-select" } %>
+          <%= form.label :user_id, "Teacher" %>
+        </div>
+      </div>
+    <% end %>
 
-  <div>
-    <%= form.submit %>
+    <div class="col-12">
+      <div class="d-flex gap-2">
+        <%= form.submit class: "btn btn-primary" do %>
+          <i class="bi bi-save"></i> Save Teacher
+        <% end %>
+        <%= link_to "Cancel", teachers_path, class: "btn btn-outline-secondary" %>
+      </div>
+    </div>
   </div>
 <% end %>

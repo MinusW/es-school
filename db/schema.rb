@@ -41,14 +41,6 @@ ActiveRecord::Schema[8.0].define(version: 2025_03_26_204118) do
     t.index ["quarter_id"], name: "index_classrooms_on_quarter_id"
   end
 
-  create_table "course_modules", force: :cascade do |t|
-    t.string "name"
-    t.text "description"
-    t.boolean "is_archived"
-    t.datetime "created_at", null: false
-    t.datetime "updated_at", null: false
-  end
-
   create_table "courses", force: :cascade do |t|
     t.datetime "start_time"
     t.datetime "end_time"
@@ -150,8 +142,8 @@ ActiveRecord::Schema[8.0].define(version: 2025_03_26_204118) do
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.integer "address_id"
-    t.string "first_name"
-    t.string "last_name"
+    t.string "first_name", null: false
+    t.string "last_name", null: false
     t.boolean "is_archived"
     t.string "phone"
     t.index ["address_id"], name: "index_users_on_address_id"

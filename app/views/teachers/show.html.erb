@@ -1,17 +1,137 @@
-<p style="color: green"><%= notice %></p>
+<% content_for :title, @teacher.user.full_name %>
 
-<%= render @teacher %>
+<div class="container mt-4">
+  <div class="row justify-content-center">
+    <div class="col-md-8">
+      <div class="card">
+        <div class="card-header bg-white">
+          <div class="d-flex justify-content-between align-items-center">
+            <div class="d-flex align-items-center gap-3">
+              <h1 class="h3 mb-0">Teacher Details</h1>
+              <% if @teacher.is_archived %>
+                <span class="badge bg-secondary">Archived</span>
+              <% else %>
+                <span class="badge bg-success">Active</span>
+              <% end %>
+            </div>
+            <%= link_to teachers_path, class: "btn btn-outline-secondary btn-sm" do %>
+              <i class="bi bi-arrow-left"></i> Back to Teachers
+            <% end %>
+          </div>
+        </div>
+        <div class="card-body">
+          <div class="row g-3">
+            <div class="col-md-6">
+              <div class="p-3 border rounded">
+                <h6 class="text-muted mb-2">Name</h6>
+                <p class="mb-0">
+                  <i class="bi bi-person text-primary"></i>
+                  <%= @teacher.user.full_name %>
+                </p>
+              </div>
+            </div>
 
-<div>
-  <% if policy(@teacher).calendar? %>
-    <%= link_to "View Teaching Schedule", calendar_teacher_path(@teacher), class: "btn btn-primary" %>
-  <% end %>
-  <% if policy(@teacher).edit? %>
-    <%= link_to "Edit this teacher", edit_teacher_path(@teacher) %> |
-  <% end %>
-  <%= link_to "Back to teachers", teachers_path %>
+            <div class="col-md-6">
+              <div class="p-3 border rounded">
+                <h6 class="text-muted mb-2">Email</h6>
+                <p class="mb-0">
+                  <i class="bi bi-envelope text-primary"></i>
+                  <%= @teacher.user.email %>
+                </p>
+              </div>
+            </div>
 
-  <% if policy(@teacher).destroy? %>
-    <%= button_to "Destroy this teacher", @teacher, method: :delete %>
-  <% end %>
+            <div class="col-md-6">
+              <div class="p-3 border rounded">
+                <h6 class="text-muted mb-2">Phone</h6>
+                <p class="mb-0">
+                  <i class="bi bi-telephone text-primary"></i>
+                  <%= @teacher.user.phone %>
+                </p>
+              </div>
+            </div>
+
+            <div class="col-md-6">
+              <div class="p-3 border rounded">
+                <h6 class="text-muted mb-2">IBAN</h6>
+                <p class="mb-0">
+                  <i class="bi bi-bank text-primary"></i>
+                  <%= @teacher.IBAN %>
+                </p>
+              </div>
+            </div>
+
+            <div class="col-md-6">
+              <div class="p-3 border rounded">
+                <h6 class="text-muted mb-2">Address</h6>
+                <% if @teacher.user.address %>
+                  <p class="mb-0">
+                    <i class="bi bi-geo-alt text-primary"></i>
+                    <%= link_to @teacher.user.address.full_address, @teacher.user.address, class: "text-decoration-none" %>
+                  </p>
+                <% else %>
+                  <p class="mb-0 text-muted">
+                    <i class="bi bi-geo-alt text-primary"></i>
+                    No address assigned
+                  </p>
+                <% end %>
+              </div>
+            </div>
+
+            <div class="col-md-6">
+              <div class="p-3 border rounded">
+                <h6 class="text-muted mb-2">Status</h6>
+                <p class="mb-0">
+                  <i class="bi bi-info-circle text-primary"></i>
+                  <%= @teacher.state.titleize %>
+                </p>
+              </div>
+            </div>
+          </div>
+
+          <% if @teacher.classrooms.not_archived.any? %>
+            <div class="mt-4">
+              <h5 class="mb-3">Current Classes</h5>
+              <div class="list-group">
+                <% @teacher.classrooms.not_archived.each do |classroom| %>
+                  <%= link_to classroom_path(classroom), class: "list-group-item list-group-item-action" do %>
+                    <div class="d-flex w-100 justify-content-between">
+                      <h6 class="mb-1"><%= classroom.name %></h6>
+                      <small class="text-muted">
+                        <%= pluralize(classroom.students.not_archived.count, 'student') %>
+                      </small>
+                    </div>
+                  <% end %>
+                <% end %>
+              </div>
+            </div>
+          <% end %>
+        </div>
+        <div class="card-footer bg-white">
+          <div class="d-flex gap-2">
+            <% if policy(@teacher).calendar? %>
+              <%= link_to calendar_teacher_path(@teacher), class: "btn btn-outline-primary" do %>
+                <i class="bi bi-calendar-week"></i> View Teaching Schedule
+              <% end %>
+            <% end %>
+
+            <% if policy(@teacher).update? %>
+              <%= link_to edit_teacher_path(@teacher), class: "btn btn-outline-secondary" do %>
+                <i class="bi bi-pencil"></i> Edit Teacher
+              <% end %>
+            <% end %>
+
+            <% if policy(@teacher).destroy? && !@teacher.is_archived %>
+              <%= button_to teacher_path(@teacher), 
+                  method: :delete, 
+                  class: "btn btn-outline-danger",
+                  form: { data: { turbo_confirm: "Are you sure you want to archive this teacher?" } } do %>
+                <i class="bi bi-archive"></i> Archive Teacher
+              <% end %>
+            <% end %>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
 </div>

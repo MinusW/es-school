@@ -1,9 +1,8 @@
-<%= form_with(model: course) do |form| %>
+<%= form_with(model: course, class: "needs-validation", data: { turbo: false }) do |form| %>
   <% if course.errors.any? %>
-    <div style="color: red">
-      <h2><%= pluralize(course.errors.count, "error") %> prohibited this course from being saved:</h2>
-
-      <ul>
+    <div class="alert alert-danger">
+      <h4 class="alert-heading"><%= pluralize(course.errors.count, "error") %> prohibited this course from being saved:</h4>
+      <ul class="mb-0">
         <% course.errors.each do |error| %>
           <li><%= error.full_message %></li>
         <% end %>
@@ -11,47 +10,90 @@
     </div>
   <% end %>
 
-  <div>
-    <%= form.label :start_time, style: "display: block" %>
-    <%= form.datetime_field :start_time %>
-  </div>
+  <div class="row g-3">
+    <div class="col-md-6">
+      <div class="form-floating">
+        <%= form.collection_select :theme_id, 
+            Theme.not_archived, 
+            :id, 
+            :module_name, 
+            { prompt: "Select module" },
+            { class: "form-select" } %>
+        <%= form.label :theme_id, "Module" %>
+      </div>
+    </div>
 
-  <div>
-    <%= form.label :end_time, style: "display: block" %>
-    <%= form.datetime_field :end_time %>
-  </div>
+    <div class="col-md-6">
+      <div class="form-floating">
+        <%= form.collection_select :teacher_id, 
+            Teacher.not_archived, 
+            :id, 
+            ->(t) { t.user.full_name }, 
+            { prompt: "Select teacher" },
+            { class: "form-select" } %>
+        <%= form.label :teacher_id, "Teacher" %>
+      </div>
+    </div>
 
-  <div>
-    <%= form.label :weekday, style: "display: block" %>
-    <%= form.number_field :weekday %>
-  </div>
+    <div class="col-md-6">
+      <div class="form-floating">
+        <% classrooms = Classroom.not_archived.includes(:teacher, :room, :class_type).order(:name) %>
+        <% if classrooms.any? %>
+          <%= form.collection_select :classroom_id, 
+              classrooms, 
+              :id, 
+              ->(c) { "#{c.name} (#{c.room.name})" }, 
+              { prompt: "Select classroom" },
+              { class: "form-select" } %>
+          <%= form.label :classroom_id, "Classroom" %>
+        <% else %>
+          <div class="alert alert-warning">
+            <i class="bi bi-exclamation-triangle"></i> No active classrooms found. Please create a classroom first.
+          </div>
+        <% end %>
+      </div>
+    </div>
 
-  <div>
-    <%= form.label :quarter_id, style: "display: block" %>
-    <%= form.text_field :quarter_id %>
-  </div>
+    <div class="col-md-6">
+      <div class="form-floating">
+        <%= form.select :weekday, 
+            Course.weekdays.keys.map { |day| [day.titleize, day] },
+            { prompt: "Select weekday" },
+            { class: "form-select" } %>
+        <%= form.label :weekday, "Weekday" %>
+      </div>
+    </div>
 
-  <div>
-    <%= form.label :theme_id, style: "display: block" %>
-    <%= form.text_field :theme_id %>
-  </div>
+    <div class="col-md-6">
+      <div class="form-floating">
+        <%= form.time_field :start_time, class: "form-control" %>
+        <%= form.label :start_time, "Start Time" %>
+      </div>
+    </div>
 
-  <div>
-    <%= form.label :classroom_id, style: "display: block" %>
-    <%= form.text_field :classroom_id %>
-  </div>
+    <div class="col-md-6">
+      <div class="form-floating">
+        <%= form.time_field :end_time, class: "form-control" %>
+        <%= form.label :end_time, "End Time" %>
+      </div>
+    </div>
 
-  <div>
-    <%= form.label :teacher_id, style: "display: block" %>
-    <%= form.text_field :teacher_id %>
-  </div>
+    <% if course.persisted? %>
+      <div class="col-md-6">
+        <div class="form-check form-switch">
+          <%= form.check_box :is_archived, class: "form-check-input" %>
+          <%= form.label :is_archived, "Archive Course", class: "form-check-label" %>
+        </div>
+      </div>
+    <% end %>
 
-  <div>
-    <%= form.label :is_archived, style: "display: block" %>
-    <%= form.checkbox :is_archived %>
-  </div>
-
-  <div>
-    <%= form.submit %>
+    <div class="col-12">
+      <div class="d-flex gap-2">
+        <%= form.submit class: "btn btn-primary" do %>
+          <i class="bi bi-save"></i> Save Course
+        <% end %>
+        <%= link_to "Cancel", courses_path, class: "btn btn-outline-secondary" %>
+      </div>
+    </div>
   </div>
 <% end %>

@@ -1,8 +1,19 @@
-<% content_for :title, "Editing classroom" %>
+<% content_for :title, "Edit Classroom" %>
 
-<h1>Editing classroom</h1>
-
-<%= render "form", classroom: @classroom %>
+<div class="container mt-4">
+  <div class="row justify-content-center">
+    <div class="col-md-8">
+      <div class="card">
+        <div class="card-header bg-white">
+          <h1 class="h3 mb-0">Edit Classroom</h1>
+        </div>
+        <div class="card-body">
+          <%= render "form", classroom: @classroom %>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
 
 <br>
 
