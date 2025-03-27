@@ -27,19 +27,23 @@ A comprehensive school management system built with Ruby on Rails that helps man
 - Generate PDF reports of their grades
 
 ## Technical Features
-- Role-based authentication and authorization
+- Role-based authentication with Devise
+- Authorization with Pundit
+- Role management with Rolify
 - Soft deletion for archived records
-- PDF generation for student reports
+- PDF generation with Prawn
 - Responsive design with Bootstrap
 - Interactive calendar view for schedules
 - Grade tracking with averages and statistics
 - Multi-quarter academic period management
+- Hotwire (Turbo and Stimulus) for dynamic interactions
+- Importmap for JavaScript management
 
 ## Prerequisites
 - Ruby 3.2.2 or higher
-- Rails 7.1.3 or higher
-- PostgreSQL
-- Node.js and Yarn (for JavaScript dependencies)
+- Rails 8.0.2
+- SQLite3
+- Node.js (for JavaScript dependencies)
 
 ## Installation
 
@@ -52,7 +56,6 @@ cd es-school
 2. Install dependencies:
 ```bash
 bundle install
-yarn install
 ```
 
 3. Set up the database:
@@ -134,12 +137,6 @@ es-school/
 ## License
 
 This project is licensed under the MIT License - see the LICENSE file for details.
-
-## Acknowledgments
-
-- Ruby on Rails team for the amazing framework
-- Bootstrap team for the UI components
-- All contributors who have helped with the project
 
 ## Support
 
