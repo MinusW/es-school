@@ -14,7 +14,7 @@ class GradePolicy < ApplicationPolicy
   end
 
   def update?
-    user.teacher? && record.teacher_id == user.id
+    user.dean? || (user.teacher? && record.teacher_id == user.id)
   end
 
   def destroy?
