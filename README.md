@@ -126,6 +126,9 @@ es-school/
 - **Theme**: Subject/themes taught in courses
 - **Room**: Physical classroom locations
 
+## Key changes in the class diagram
+Some names weren't open to be used, like modules and classes, which forced me to change their names to Themes and ClassRooms.
+
 ## Contributing
 
 1. Fork the repository
