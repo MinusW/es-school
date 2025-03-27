@@ -2,15 +2,67 @@
 
 <% content_for :title, "Themes" %>
 
-<h1>Themes</h1>
+<div class="container mt-4">
+  <div class="d-flex justify-content-between align-items-center mb-4">
+    <h1>Themes</h1>
+    <% if policy(Theme).create? %>
+      <%= link_to new_theme_path, class: "btn btn-primary" do %>
+        <i class="bi bi-plus-lg"></i> New Theme
+      <% end %>
+    <% end %>
+  </div>
 
-<div id="themes">
-  <% @themes.each do |theme| %>
-    <%= render theme %>
-    <p>
-      <%= link_to "Show this theme", theme %>
-    </p>
-  <% end %>
+  <div class="card">
+    <div class="card-body">
+      <div class="table-responsive">
+        <table class="table table-hover">
+          <thead>
+            <tr>
+              <th>Module Name</th>
+              <th>Description</th>
+              <th>Status</th>
+              <th>Actions</th>
+            </tr>
+          </thead>
+          <tbody>
+            <% @themes.each do |theme| %>
+              <tr>
+                <td><%= theme.module_name %></td>
+                <td><%= theme.module_description %></td>
+                <td>
+                  <% if theme.is_archived %>
+                    <span class="badge bg-secondary">Archived</span>
+                  <% else %>
+                    <span class="badge bg-success">Active</span>
+                  <% end %>
+                </td>
+                <td>
+                  <div class="d-flex gap-2">
+                    <%= link_to theme_path(theme), class: "btn btn-outline-primary btn-sm" do %>
+                      <i class="bi bi-eye"></i>
+                    <% end %>
+                    
+                    <% if policy(theme).update? %>
+                      <%= link_to edit_theme_path(theme), class: "btn btn-outline-secondary btn-sm" do %>
+                        <i class="bi bi-pencil"></i>
+                      <% end %>
+                    <% end %>
+
+                    <% if policy(theme).destroy? && !theme.is_archived %>
+                      <%= button_to theme_path(theme), 
+                          method: :delete, 
+                          class: "btn btn-outline-danger btn-sm",
+                          form: { data: { turbo_confirm: "Are you sure you want to archive this theme?" } } do %>
+                        <i class="bi bi-archive"></i>
+                      <% end %>
+                    <% end %>
+                  </div>
+                </td>
+              </tr>
+            <% end %>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
 </div>
-
-<%= link_to "New theme", new_theme_path %>

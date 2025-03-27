@@ -1,16 +1,68 @@
 <% content_for :title, "Quarters" %>
 
-<p style="color: green"><%= notice %></p>
+<div class="container mt-4">
+  <div class="d-flex justify-content-between align-items-center mb-4">
+    <h1>Quarters</h1>
+    <% if policy(Quarter).create? %>
+      <%= link_to new_quarter_path, class: "btn btn-primary" do %>
+        <i class="bi bi-plus-lg"></i> New Quarter
+      <% end %>
+    <% end %>
+  </div>
 
-<h1>Quarters</h1>
+  <div class="card">
+    <div class="card-body">
+      <div class="table-responsive">
+        <table class="table table-hover">
+          <thead>
+            <tr>
+              <th>Name</th>
+              <th>Start Date</th>
+              <th>End Date</th>
+              <th>Status</th>
+              <th>Actions</th>
+            </tr>
+          </thead>
+          <tbody>
+            <% @quarters.each do |quarter| %>
+              <tr>
+                <td><%= quarter.name %></td>
+                <td><%= quarter.start_date.strftime("%B %d, %Y") %></td>
+                <td><%= quarter.end_date.strftime("%B %d, %Y") %></td>
+                <td>
+                  <% if quarter.is_archived %>
+                    <span class="badge bg-secondary">Archived</span>
+                  <% else %>
+                    <span class="badge bg-success">Active</span>
+                  <% end %>
+                </td>
+                <td>
+                  <div class="d-flex gap-2">
+                    <%= link_to quarter_path(quarter), class: "btn btn-outline-primary btn-sm" do %>
+                      <i class="bi bi-eye"></i>
+                    <% end %>
+                    
+                    <% if policy(quarter).update? %>
+                      <%= link_to edit_quarter_path(quarter), class: "btn btn-outline-secondary btn-sm" do %>
+                        <i class="bi bi-pencil"></i>
+                      <% end %>
+                    <% end %>
 
-<div id="quarters">
-  <% @quarters.each do |quarter| %>
-    <%= render quarter %>
-    <p>
-      <%= link_to "Show this quarter", quarter %>
-    </p>
-  <% end %>
-</div>
-
-<%= link_to "New quarter", new_quarter_path %> 
+                    <% if policy(quarter).destroy? && !quarter.is_archived %>
+                      <%= button_to quarter_path(quarter), 
+                          method: :delete, 
+                          class: "btn btn-outline-danger btn-sm",
+                          form: { data: { turbo_confirm: "Are you sure you want to archive this quarter?" } } do %>
+                        <i class="bi bi-archive"></i>
+                      <% end %>
+                    <% end %>
+                  </div>
+                </td>
+              </tr>
+            <% end %>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</div> 

@@ -1,12 +1,106 @@
-<% content_for :title, "Quarter Details" %>
+<% content_for :title, @quarter.name %>
 
-<p style="color: green"><%= notice %></p>
+<div class="container mt-4">
+  <div class="row justify-content-center">
+    <div class="col-md-8">
+      <div class="card">
+        <div class="card-header bg-white">
+          <div class="d-flex justify-content-between align-items-center">
+            <div class="d-flex align-items-center gap-3">
+              <h1 class="h3 mb-0">Quarter Details</h1>
+              <% if @quarter.is_archived %>
+                <span class="badge bg-secondary">Archived</span>
+              <% else %>
+                <span class="badge bg-success">Active</span>
+              <% end %>
+            </div>
+            <%= link_to quarters_path, class: "btn btn-outline-secondary btn-sm" do %>
+              <i class="bi bi-arrow-left"></i> Back to Quarters
+            <% end %>
+          </div>
+        </div>
+        <div class="card-body">
+          <div class="row g-3">
+            <div class="col-md-6">
+              <div class="p-3 border rounded">
+                <h6 class="text-muted mb-2">Name</h6>
+                <p class="mb-0">
+                  <i class="bi bi-calendar text-primary"></i>
+                  <%= @quarter.name %>
+                </p>
+              </div>
+            </div>
 
-<%= render @quarter %>
+            <div class="col-md-6">
+              <div class="p-3 border rounded">
+                <h6 class="text-muted mb-2">Start Date</h6>
+                <p class="mb-0">
+                  <i class="bi bi-calendar-check text-primary"></i>
+                  <%= @quarter.start_date.strftime("%B %d, %Y") %>
+                </p>
+              </div>
+            </div>
 
-<div>
-  <%= link_to "Edit this quarter", edit_quarter_path(@quarter) %> |
-  <%= link_to "Back to quarters", quarters_path %>
+            <div class="col-md-6">
+              <div class="p-3 border rounded">
+                <h6 class="text-muted mb-2">End Date</h6>
+                <p class="mb-0">
+                  <i class="bi bi-calendar-x text-primary"></i>
+                  <%= @quarter.end_date.strftime("%B %d, %Y") %>
+                </p>
+              </div>
+            </div>
 
-  <%= button_to "Archive this quarter", @quarter, method: :delete %>
+            <div class="col-md-6">
+              <div class="p-3 border rounded">
+                <h6 class="text-muted mb-2">Status</h6>
+                <p class="mb-0">
+                  <i class="bi bi-info-circle text-primary"></i>
+                  <%= @quarter.is_archived ? "Archived" : "Active" %>
+                </p>
+              </div>
+            </div>
+
+            <div class="col-12">
+              <div class="p-3 border rounded">
+                <h6 class="text-muted mb-2">Statistics</h6>
+                <div class="row g-3">
+                  <div class="col-md-4">
+                    <p class="mb-0">
+                      <i class="bi bi-book text-primary"></i>
+                      <%= pluralize(@quarter.courses.not_archived.count, 'course') %>
+                    </p>
+                  </div>
+                  <div class="col-md-4">
+                    <p class="mb-0">
+                      <i class="bi bi-people text-primary"></i>
+                      <%= pluralize(@quarter.classrooms.not_archived.count, 'classroom') %>
+                    </p>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="card-footer bg-white">
+          <div class="d-flex gap-2">
+            <% if policy(@quarter).update? %>
+              <%= link_to edit_quarter_path(@quarter), class: "btn btn-outline-primary" do %>
+                <i class="bi bi-pencil"></i> Edit Quarter
+              <% end %>
+            <% end %>
+
+            <% if policy(@quarter).destroy? && !@quarter.is_archived %>
+              <%= button_to quarter_path(@quarter), 
+                  method: :delete, 
+                  class: "btn btn-outline-danger",
+                  form: { data: { turbo_confirm: "Are you sure you want to archive this quarter?" } } do %>
+                <i class="bi bi-archive"></i> Archive Quarter
+              <% end %>
+            <% end %>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
 </div> 

@@ -25,6 +25,18 @@
 
     <div class="col-md-6">
       <div class="form-floating">
+        <%= form.collection_select :quarter_id, 
+            Quarter.not_archived, 
+            :id, 
+            :name, 
+            { prompt: "Select quarter" },
+            { class: "form-select" } %>
+        <%= form.label :quarter_id, "Quarter" %>
+      </div>
+    </div>
+
+    <div class="col-md-6">
+      <div class="form-floating">
         <%= form.collection_select :teacher_id, 
             Teacher.not_archived, 
             :id, 

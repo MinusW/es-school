@@ -1,9 +1,8 @@
-<%= form_with(model: quarter) do |form| %>
+<%= form_with(model: quarter, class: "needs-validation", data: { turbo: false }) do |form| %>
   <% if quarter.errors.any? %>
-    <div style="color: red">
-      <h2><%= pluralize(quarter.errors.count, "error") %> prohibited this quarter from being saved:</h2>
-
-      <ul>
+    <div class="alert alert-danger">
+      <h4 class="alert-heading"><%= pluralize(quarter.errors.count, "error") %> prohibited this quarter from being saved:</h4>
+      <ul class="mb-0">
         <% quarter.errors.each do |error| %>
           <li><%= error.full_message %></li>
         <% end %>
@@ -11,27 +10,44 @@
     </div>
   <% end %>
 
-  <div>
-    <%= form.label :name, style: "display: block" %>
-    <%= form.text_field :name %>
-  </div>
+  <div class="row g-3">
+    <div class="col-md-6">
+      <div class="form-floating">
+        <%= form.text_field :name, class: "form-control", placeholder: "Name" %>
+        <%= form.label :name, "Name" %>
+      </div>
+    </div>
 
-  <div>
-    <%= form.label :start_date, style: "display: block" %>
-    <%= form.date_field :start_date %>
-  </div>
+    <div class="col-md-6">
+      <div class="form-floating">
+        <%= form.date_field :start_date, class: "form-control" %>
+        <%= form.label :start_date, "Start Date" %>
+      </div>
+    </div>
 
-  <div>
-    <%= form.label :end_date, style: "display: block" %>
-    <%= form.date_field :end_date %>
-  </div>
+    <div class="col-md-6">
+      <div class="form-floating">
+        <%= form.date_field :end_date, class: "form-control" %>
+        <%= form.label :end_date, "End Date" %>
+      </div>
+    </div>
 
-  <div>
-    <%= form.label :is_archived, style: "display: block" %>
-    <%= form.check_box :is_archived %>
-  </div>
+    <% if quarter.persisted? %>
+      <div class="col-md-6">
+        <div class="form-check form-switch">
+          <%= form.check_box :is_archived, class: "form-check-input" %>
+          <%= form.label :is_archived, "Archive Quarter", class: "form-check-label" %>
+        </div>
+      </div>
+    <% end %>
 
-  <div>
-    <%= form.submit %>
+    <div class="col-12">
+      <div class="d-flex gap-2">
+        <%= form.submit class: "btn btn-primary" do %>
+          <i class="bi bi-save"></i> Save Quarter
+        <% end %>
+        <%= link_to "Cancel", quarters_path, class: "btn btn-outline-secondary" %>
+      </div>
+    </div>
   </div>
 <% end %> 

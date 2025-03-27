@@ -1,9 +1,21 @@
 <% content_for :title, "New Quarter" %>
 
-<h1>New quarter</h1>
-
-<%= render "form", quarter: @quarter %>
-
-<div>
-  <%= link_to "Back to quarters", quarters_path %>
+<div class="container mt-4">
+  <div class="row justify-content-center">
+    <div class="col-md-8">
+      <div class="card">
+        <div class="card-header bg-white">
+          <div class="d-flex justify-content-between align-items-center">
+            <h1 class="h3 mb-0">New Quarter</h1>
+            <%= link_to quarters_path, class: "btn btn-outline-secondary btn-sm" do %>
+              <i class="bi bi-arrow-left"></i> Back to Quarters
+            <% end %>
+          </div>
+        </div>
+        <div class="card-body">
+          <%= render "form", quarter: @quarter %>
+        </div>
+      </div>
+    </div>
+  </div>
 </div> 

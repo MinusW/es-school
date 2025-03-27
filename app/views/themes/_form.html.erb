@@ -1,9 +1,8 @@
-<%= form_with(model: theme) do |form| %>
+<%= form_with(model: theme, class: "needs-validation", data: { turbo: false }) do |form| %>
   <% if theme.errors.any? %>
-    <div style="color: red">
-      <h2><%= pluralize(theme.errors.count, "error") %> prohibited this theme from being saved:</h2>
-
-      <ul>
+    <div class="alert alert-danger">
+      <h4 class="alert-heading"><%= pluralize(theme.errors.count, "error") %> prohibited this theme from being saved:</h4>
+      <ul class="mb-0">
         <% theme.errors.each do |error| %>
           <li><%= error.full_message %></li>
         <% end %>
@@ -11,22 +10,37 @@
     </div>
   <% end %>
 
-  <div>
-    <%= form.label :module_name, style: "display: block" %>
-    <%= form.text_field :module_name %>
-  </div>
+  <div class="row g-3">
+    <div class="col-md-6">
+      <div class="form-floating">
+        <%= form.text_field :module_name, class: "form-control", placeholder: "Module Name" %>
+        <%= form.label :module_name, "Module Name" %>
+      </div>
+    </div>
 
-  <div>
-    <%= form.label :module_description, style: "display: block" %>
-    <%= form.text_area :module_description %>
-  </div>
+    <div class="col-12">
+      <div class="form-floating">
+        <%= form.text_area :module_description, class: "form-control", placeholder: "Description", style: "height: 100px" %>
+        <%= form.label :module_description, "Description" %>
+      </div>
+    </div>
 
-  <div>
-    <%= form.label :is_archived, style: "display: block" %>
-    <%= form.check_box :is_archived %>
-  </div>
+    <% if theme.persisted? %>
+      <div class="col-md-6">
+        <div class="form-check form-switch">
+          <%= form.check_box :is_archived, class: "form-check-input" %>
+          <%= form.label :is_archived, "Archive Theme", class: "form-check-label" %>
+        </div>
+      </div>
+    <% end %>
 
-  <div>
-    <%= form.submit %>
+    <div class="col-12">
+      <div class="d-flex gap-2">
+        <%= form.submit class: "btn btn-primary" do %>
+          <i class="bi bi-save"></i> Save Theme
+        <% end %>
+        <%= link_to "Cancel", themes_path, class: "btn btn-outline-secondary" %>
+      </div>
+    </div>
   </div>
 <% end %>

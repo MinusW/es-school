@@ -1,10 +1,90 @@
-<p style="color: green"><%= notice %></p>
+<% content_for :title, @theme.module_name %>
 
-<%= render @theme %>
+<div class="container mt-4">
+  <div class="row justify-content-center">
+    <div class="col-md-8">
+      <div class="card">
+        <div class="card-header bg-white">
+          <div class="d-flex justify-content-between align-items-center">
+            <div class="d-flex align-items-center gap-3">
+              <h1 class="h3 mb-0">Theme Details</h1>
+              <% if @theme.is_archived %>
+                <span class="badge bg-secondary">Archived</span>
+              <% else %>
+                <span class="badge bg-success">Active</span>
+              <% end %>
+            </div>
+            <%= link_to themes_path, class: "btn btn-outline-secondary btn-sm" do %>
+              <i class="bi bi-arrow-left"></i> Back to Themes
+            <% end %>
+          </div>
+        </div>
+        <div class="card-body">
+          <div class="row g-3">
+            <div class="col-md-6">
+              <div class="p-3 border rounded">
+                <h6 class="text-muted mb-2">Module Name</h6>
+                <p class="mb-0">
+                  <i class="bi bi-book text-primary"></i>
+                  <%= @theme.module_name %>
+                </p>
+              </div>
+            </div>
 
-<div>
-  <%= link_to "Edit this theme", edit_theme_path(@theme) %> |
-  <%= link_to "Back to themes", themes_path %>
+            <div class="col-md-6">
+              <div class="p-3 border rounded">
+                <h6 class="text-muted mb-2">Status</h6>
+                <p class="mb-0">
+                  <i class="bi bi-info-circle text-primary"></i>
+                  <%= @theme.is_archived ? "Archived" : "Active" %>
+                </p>
+              </div>
+            </div>
 
-  <%= button_to "Destroy this theme", @theme, method: :delete %>
+            <div class="col-12">
+              <div class="p-3 border rounded">
+                <h6 class="text-muted mb-2">Description</h6>
+                <p class="mb-0">
+                  <i class="bi bi-card-text text-primary"></i>
+                  <%= @theme.module_description %>
+                </p>
+              </div>
+            </div>
+
+            <div class="col-12">
+              <div class="p-3 border rounded">
+                <h6 class="text-muted mb-2">Statistics</h6>
+                <div class="row g-3">
+                  <div class="col-md-4">
+                    <p class="mb-0">
+                      <i class="bi bi-calendar-check text-primary"></i>
+                      <%= pluralize(@theme.courses.not_archived.count, 'course') %>
+                    </p>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="card-footer bg-white">
+          <div class="d-flex gap-2">
+            <% if policy(@theme).update? %>
+              <%= link_to edit_theme_path(@theme), class: "btn btn-outline-primary" do %>
+                <i class="bi bi-pencil"></i> Edit Theme
+              <% end %>
+            <% end %>
+
+            <% if policy(@theme).destroy? && !@theme.is_archived %>
+              <%= button_to theme_path(@theme), 
+                  method: :delete, 
+                  class: "btn btn-outline-danger",
+                  form: { data: { turbo_confirm: "Are you sure you want to archive this theme?" } } do %>
+                <i class="bi bi-archive"></i> Archive Theme
+              <% end %>
+            <% end %>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
 </div>
