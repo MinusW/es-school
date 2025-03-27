@@ -1,9 +1,8 @@
-<%= form_with(model: student) do |form| %>
+<%= form_with(model: student, class: "needs-validation", data: { turbo: false }) do |form| %>
   <% if student.errors.any? %>
-    <div style="color: red">
-      <h2><%= pluralize(student.errors.count, "error") %> prohibited this student from being saved:</h2>
-
-      <ul>
+    <div class="alert alert-danger">
+      <h4 class="alert-heading"><%= pluralize(student.errors.count, "error") %> prohibited this student from being saved:</h4>
+      <ul class="mb-0">
         <% student.errors.each do |error| %>
           <li><%= error.full_message %></li>
         <% end %>
@@ -11,27 +10,59 @@
     </div>
   <% end %>
 
-  <div>
-    <%= form.label :user_id, "Student", style: "display: block" %>
-    <%= form.collection_select :user_id, User.with_role(:student), :id, :email, {prompt: "Select student"}, {class: "form-control"} %>
-  </div>
+  <div class="row g-3">
+    <% unless student.persisted? %>
+      <div class="col-md-6">
+        <div class="form-floating">
+          <%= form.collection_select :user_id, 
+              User.with_role(:student).not_archived, 
+              :id, 
+              :full_name, 
+              { prompt: "Select student" },
+              { class: "form-select" } %>
+          <%= form.label :user_id, "Student" %>
+        </div>
+      </div>
+    <% end %>
 
-  <div>
-    <%= form.label :classroom_id, style: "display: block" %>
-    <%= form.collection_select :classroom_id, Classroom.not_archived, :id, :name, {prompt: "Select classroom"}, {class: "form-control"} %>
-  </div>
+    <div class="col-md-6">
+      <div class="form-floating">
+        <%= form.collection_select :classroom_id, 
+            Classroom.not_archived.includes(:teacher, :room).order(:name), 
+            :id, 
+            ->(c) { "#{c.name} (#{c.room.name})" }, 
+            { prompt: "Select classroom" },
+            { class: "form-select" } %>
+        <%= form.label :classroom_id, "Classroom" %>
+      </div>
+    </div>
 
-  <div>
-    <%= form.label :state, style: "display: block" %>
-    <%= form.select :state, Student.states.keys.map { |state| [state.humanize, state] }, {}, {class: "form-control"} %>
-  </div>
+    <div class="col-md-6">
+      <div class="form-floating">
+        <%= form.select :state, 
+            Student.states.keys.map { |state| [state.titleize, state] },
+            { prompt: "Select state" },
+            { class: "form-select" } %>
+        <%= form.label :state, "State" %>
+      </div>
+    </div>
 
-  <div>
-    <%= form.label :is_archived, style: "display: block" %>
-    <%= form.check_box :is_archived %>
-  </div>
+    <% if student.persisted? %>
+      <div class="col-md-6">
+        <div class="form-check form-switch">
+          <%= form.check_box :is_archived, class: "form-check-input" %>
+          <%= form.label :is_archived, "Archive Student", class: "form-check-label" %>
+        </div>
+      </div>
+    <% end %>
 
-  <div>
-    <%= form.submit class: "bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded mt-3" %>
+    <div class="col-12">
+      <div class="d-flex gap-2">
+        <%= form.submit class: "btn btn-primary" do %>
+          <i class="bi bi-save"></i> Save Student
+        <% end %>
+        <%= link_to "Cancel", students_path, class: "btn btn-outline-secondary" %>
+      </div>
+    </div>
   </div>
 <% end %>
