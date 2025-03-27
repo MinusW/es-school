@@ -1,16 +1,71 @@
 <p style="color: green"><%= notice %></p>
 
-<% content_for :title, "Class types" %>
+<% content_for :title, "Class Types" %>
 
-<h1>Class types</h1>
-
-<div id="class_types">
-  <% @class_types.each do |class_type| %>
-    <%= render class_type %>
-    <p>
-      <%= link_to "Show this class type", class_type %>
-    </p>
-  <% end %>
+<div class="container mt-4">
+  <div class="row justify-content-center">
+    <div class="col-md-10">
+      <div class="card">
+        <div class="card-header bg-white">
+          <div class="d-flex justify-content-between align-items-center">
+            <h1 class="h3 mb-0">Class Types</h1>
+            <% if policy(ClassType).create? %>
+              <%= link_to new_class_type_path, class: "btn btn-primary" do %>
+                <i class="bi bi-plus-lg"></i> New Class Type
+              <% end %>
+            <% end %>
+          </div>
+        </div>
+        <div class="card-body">
+          <div class="table-responsive">
+            <table class="table table-hover">
+              <thead>
+                <tr>
+                  <th>Name</th>
+                  <th>Description</th>
+                  <th>Status</th>
+                  <th>Actions</th>
+                </tr>
+              </thead>
+              <tbody>
+                <% @class_types.each do |class_type| %>
+                  <tr>
+                    <td><%= class_type.name %></td>
+                    <td><%= class_type.description %></td>
+                    <td>
+                      <% if class_type.is_archived %>
+                        <span class="badge bg-secondary">Archived</span>
+                      <% else %>
+                        <span class="badge bg-success">Active</span>
+                      <% end %>
+                    </td>
+                    <td>
+                      <div class="btn-group">
+                        <%= link_to class_type_path(class_type), class: "btn btn-sm btn-outline-primary" do %>
+                          <i class="bi bi-eye"></i>
+                        <% end %>
+                        <% if policy(class_type).update? %>
+                          <%= link_to edit_class_type_path(class_type), class: "btn btn-sm btn-outline-secondary" do %>
+                            <i class="bi bi-pencil"></i>
+                          <% end %>
+                        <% end %>
+                        <% if policy(class_type).destroy? && !class_type.is_archived %>
+                          <%= button_to class_type_path(class_type), 
+                              method: :delete, 
+                              class: "btn btn-sm btn-outline-danger",
+                              form: { data: { turbo_confirm: "Are you sure you want to archive this class type?" } } do %>
+                            <i class="bi bi-archive"></i>
+                          <% end %>
+                        <% end %>
+                      </div>
+                    </td>
+                  </tr>
+                <% end %>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
 </div>
-
-<%= link_to "New class type", new_class_type_path %>

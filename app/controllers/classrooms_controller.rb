@@ -1,7 +1,7 @@
 class ClassroomsController < ApplicationController
   before_action :authenticate_user!
-  before_action :authorize_classroom, except: [ :index, :show, :calendar ]  # Only allow authorized actions
-  before_action :set_classroom, only: [:show, :edit, :update, :destroy, :calendar]
+  before_action :authorize_classroom, except: [ :index, :show, :calendar, :promote ]  # Only allow authorized actions
+  before_action :set_classroom, only: [:show, :edit, :update, :destroy, :calendar, :promote]
 
   def index
     @classrooms = policy_scope(Classroom)  # Pundit scope for classrooms
@@ -48,6 +48,47 @@ class ClassroomsController < ApplicationController
   def calendar
     authorize @classroom
     @courses = @classroom.courses.not_archived.order(:weekday, :start_time)
+  end
+
+  def promote
+    authorize @classroom, :promote?
+    
+    if params[:new_classroom_id].blank?
+      redirect_to @classroom, alert: "Please select a new classroom."
+      return
+    end
+    
+    new_classroom = Classroom.find_by(id: params[:new_classroom_id])
+    
+    if new_classroom.nil?
+      redirect_to @classroom, alert: "The selected classroom could not be found."
+      return
+    end
+
+    # Initialize counters for the notification
+    promoted_count = 0
+    retained_count = 0
+
+    # Process each student
+    @classroom.students.not_archived.each do |student|
+      # Calculate the student's average grade
+      average_grade = student.grades.not_archived.average(:grade)&.round(2) || 0
+      
+      # Only promote students with average grade of 4 or higher
+      if average_grade >= 4
+        student.update(classroom: new_classroom)
+        promoted_count += 1
+      else
+        # Students with average below 4 stay in the current classroom
+        retained_count += 1
+      end
+    end
+
+    # Create a detailed notification message
+    message = "Class promotion completed: #{promoted_count} students promoted"
+    message += " and #{retained_count} students retained due to grades below 4.0." if retained_count > 0
+
+    redirect_to @classroom, notice: message
   end
 
   private

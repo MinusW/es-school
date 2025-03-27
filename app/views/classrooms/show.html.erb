@@ -1,3 +1,5 @@
+<% content_for :title, @classroom.name %>
+
 <div class="container mt-4">
   <% if notice %>
     <div class="alert alert-success" role="alert">
@@ -66,6 +68,9 @@
                   <th>Name</th>
                   <th>Email</th>
                   <th>Status</th>
+                  <% if current_user.dean? %>
+                    <th>Average Grade</th>
+                  <% end %>
                   <th></th>
                 </tr>
               </thead>
@@ -81,6 +86,14 @@
                         <span class="badge bg-warning">Inactive</span>
                       <% end %>
                     </td>
+                    <% if current_user.dean? %>
+                      <td>
+                        <% average = student.grades.not_archived.average(:grade)&.round(2) || 0 %>
+                        <span class="<%= average >= 4 ? 'text-success' : 'text-danger' %>">
+                          <%= average %>
+                        </span>
+                      </td>
+                    <% end %>
                     <td class="text-end">
                       <%= link_to "View", student_path(student), class: "btn btn-sm btn-outline-primary" %>
                     </td>
@@ -118,7 +131,7 @@
         </div>
       </div>
 
-      <div class="card">
+      <div class="card mb-4">
         <div class="card-header">
           <h3 class="h5 mb-0">Statistics</h3>
         </div>
@@ -136,13 +149,76 @@
               <span>Room Capacity:</span>
               <strong><%= @classroom.room.capacity %></strong>
             </li>
-            <li class="d-flex justify-content-between">
+            <li class="mb-2 d-flex justify-content-between">
               <span>Weekly Classes:</span>
               <strong><%= @classroom.courses.not_archived.count %></strong>
             </li>
+            <% if current_user.dean? %>
+              <li class="mb-2 d-flex justify-content-between">
+                <span>Class Average:</span>
+                <strong>
+                  <% class_average = @classroom.students.not_archived.joins(:grades).where(grades: { is_archived: false }).average('grades.grade')&.round(2) || 0 %>
+                  <span class="<%= class_average >= 4 ? 'text-success' : 'text-danger' %>">
+                    <%= class_average %>
+                  </span>
+                </strong>
+              </li>
+            <% end %>
           </ul>
         </div>
       </div>
+
+      <% if current_user.dean? && !@classroom.is_archived %>
+        <div class="card">
+          <div class="card-header">
+            <h3 class="h5 mb-0">Promote Class</h3>
+          </div>
+          <div class="card-body">
+            <p class="text-muted mb-3">
+              <strong>Note:</strong> Only students with an average grade of 4.0 or higher will be promoted. 
+              Students with averages below 4.0 will remain in this classroom.
+            </p>
+            
+            <% promoted_students = @classroom.students.not_archived.select do |student| 
+              avg = student.grades.not_archived.average(:grade)&.round(2) || 0
+              avg >= 4
+            end %>
+            
+            <% if promoted_students.any? %>
+              <div class="alert alert-info mb-3">
+                <h6 class="alert-heading">Eligible for promotion (<%= promoted_students.size %> students):</h6>
+                <ul class="mb-0 small">
+                  <% promoted_students.each do |student| %>
+                    <li><%= student.user.full_name %> - Average: <%= (student.grades.not_archived.average(:grade) || 0).round(2) %></li>
+                  <% end %>
+                </ul>
+              </div>
+            <% else %>
+              <div class="alert alert-warning mb-3">
+                No students in this class have an average grade of 4.0 or higher.
+              </div>
+            <% end %>
+            
+            <%= form_with(url: promote_classroom_path(@classroom), method: :post, class: "needs-validation", data: { turbo: false }) do |f| %>
+              <div class="mb-3">
+                <%= f.label :new_classroom_id, "New Classroom", class: "form-label" %>
+                <%= f.collection_select :new_classroom_id, 
+                    Classroom.not_archived.where.not(id: @classroom.id)
+                    .where(class_type: @classroom.class_type)
+                    .includes(:room, :teacher, :quarter)
+                    .order(:name),
+                    :id,
+                    ->(c) { "#{c.name} (#{c.room.name}) - #{c.quarter.name}" },
+                    { prompt: "Select new classroom..." },
+                    { class: "form-select" } %>
+              </div>
+              <%= f.submit "Promote Class", class: "btn btn-primary w-100", 
+                  data: { turbo_confirm: "Are you sure you want to promote qualified students? Only students with an average of 4.0 or higher will be moved." },
+                  disabled: promoted_students.empty? %>
+            <% end %>
+          </div>
+        </div>
+      <% end %>
     </div>
   </div>
 

@@ -23,6 +23,10 @@ class ClassroomPolicy < ApplicationPolicy
     user.dean?
   end
 
+  def promote?
+    user.dean? && !record.is_archived
+  end
+
   class Scope < Scope
     def resolve
       if user.dean?

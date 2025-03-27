@@ -1,12 +1,28 @@
-<% content_for :title, "Editing class type" %>
+<% content_for :title, "Edit Class Type" %>
 
-<h1>Editing class type</h1>
-
-<%= render "form", class_type: @class_type %>
-
-<br>
-
-<div>
-  <%= link_to "Show this class type", @class_type %> |
-  <%= link_to "Back to class types", class_types_path %>
+<div class="container mt-4">
+  <div class="row justify-content-center">
+    <div class="col-md-8">
+      <div class="card">
+        <div class="card-header bg-white">
+          <div class="d-flex justify-content-between align-items-center">
+            <div class="d-flex align-items-center gap-3">
+              <h1 class="h3 mb-0">Edit Class Type</h1>
+              <% if @class_type.is_archived %>
+                <span class="badge bg-secondary">Archived</span>
+              <% else %>
+                <span class="badge bg-success">Active</span>
+              <% end %>
+            </div>
+            <%= link_to class_type_path(@class_type), class: "btn btn-outline-secondary btn-sm" do %>
+              <i class="bi bi-arrow-left"></i> Back to Class Type
+            <% end %>
+          </div>
+        </div>
+        <div class="card-body">
+          <%= render "form", class_type: @class_type %>
+        </div>
+      </div>
+    </div>
+  </div>
 </div>
