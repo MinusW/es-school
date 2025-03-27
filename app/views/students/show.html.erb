@@ -49,7 +49,14 @@
       <div class="card mb-4">
         <div class="card-header d-flex justify-content-between align-items-center">
           <h3 class="h5 mb-0">Grades by Subject</h3>
-          <small class="text-muted"><%= @student.grades.not_archived.count %> grades total</small>
+          <div>
+            <small class="text-muted me-3"><%= @student.grades.not_archived.count %> grades total</small>
+            <% if (current_user.teacher? || current_user.dean?) && policy(Grade).create? %>
+              <button type="button" class="btn btn-sm btn-primary" data-bs-toggle="modal" data-bs-target="#addGradeModal">
+                <i class="bi bi-plus-circle"></i> Add Grade
+              </button>
+            <% end %>
+          </div>
         </div>
         <div class="card-body">
           <% grades_by_theme = @student.grades.not_archived.includes(:course).group_by { |g| g.course.theme } %>
@@ -166,3 +173,73 @@
     </div>
   </div>
 </div>
+
+<% if (current_user.teacher? || current_user.dean?) && policy(Grade).create? %>
+  <!-- Add Grade Modal -->
+  <div class="modal fade" id="addGradeModal" tabindex="-1" aria-labelledby="addGradeModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="addGradeModalLabel">Add New Grade</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <%= form_with(model: Grade.new, class: "needs-validation", data: { turbo: false }) do |f| %>
+          <div class="modal-body">
+            <%= f.hidden_field :student_id, value: @student.id %>
+            <%= f.hidden_field :teacher_id, value: current_user.id %>
+            
+            <div class="mb-3">
+              <%= f.label :course_id, "Course", class: "form-label" %>
+              <%= f.collection_select :course_id,
+                  if current_user.dean?
+                    Course.not_archived
+                      .where(classroom: @student.classroom)
+                      .includes(:theme, :teacher)
+                      .order('themes.module_name')
+                  else
+                    Course.not_archived
+                      .where(classroom: @student.classroom)
+                      .where(teacher: current_user)
+                      .includes(:theme)
+                      .order('themes.module_name')
+                  end,
+                  :id,
+                  ->(c) { 
+                    if current_user.dean?
+                      "#{c.theme.module_name} (#{c.weekday.titleize} #{c.start_time.strftime('%H:%M')}) - #{c.teacher.user.full_name}"
+                    else
+                      "#{c.theme.module_name} (#{c.weekday.titleize} #{c.start_time.strftime('%H:%M')})"
+                    end
+                  },
+                  { prompt: "Select course..." },
+                  { class: "form-select", required: true } %>
+            </div>
+
+            <div class="mb-3">
+              <%= f.label :grade, "Grade", class: "form-label" %>
+              <%= f.number_field :grade,
+                  class: "form-control",
+                  step: "0.1",
+                  min: "0",
+                  max: "6",
+                  required: true %>
+              <div class="form-text">Enter a grade between 0 and 6</div>
+            </div>
+
+            <div class="mb-3">
+              <%= f.label :grading_date, "Date", class: "form-label" %>
+              <%= f.date_field :grading_date,
+                  class: "form-control",
+                  value: Date.current,
+                  required: true %>
+            </div>
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+            <%= f.submit "Add Grade", class: "btn btn-primary" %>
+          </div>
+        <% end %>
+      </div>
+    </div>
+  </div>
+<% end %>

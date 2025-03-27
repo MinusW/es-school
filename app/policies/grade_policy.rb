@@ -10,7 +10,7 @@ class GradePolicy < ApplicationPolicy
   end
 
   def create?
-    user.teacher?
+    user.teacher? || user.dean?
   end
 
   def update?
